@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans>
+
+	<bean id="blackInk" class="com.example.core.beans.BlackInk" />
+	
+	<bean id="fountainPen" class="com.example.core.beans.FountainPen">
+	<constructor-arg ref="balckInk"/>
+	</bean>
+	
+	<bean id="writer" class="com.example.core.beans.Writer">
+	<constructor-arg ref="fountainPen"/>
+	</bean>
+		   
+</beans>

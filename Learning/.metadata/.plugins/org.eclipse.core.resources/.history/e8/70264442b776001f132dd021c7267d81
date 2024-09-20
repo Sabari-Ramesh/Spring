@@ -1,0 +1,17 @@
+package Main;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import com.ex.BeanCore.Writer;
+
+public class JavaConfigRunner {
+	public static void main(String[] args) {
+		ApplicationContext context = new AnnotationConfigApplicationContext();
+
+		Writer writer = (Writer) context.getBean("witer");
+
+		writer.write();
+		System.out.println("Kkkk");
+	}
+}

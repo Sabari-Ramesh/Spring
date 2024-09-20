@@ -1,0 +1,5 @@
+package com.ex.Configure;
+
+public class SpringConfig {
+
+}

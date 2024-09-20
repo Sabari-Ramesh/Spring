@@ -1,0 +1,19 @@
+package com.ex.core.Beans;
+
+import com.ex.Interface.Ink;
+
+public class BlackInk implements Ink{
+
+	@Override
+	public String getColor() {
+		// TODO Auto-generated method stub
+		return "Black Color";
+	}
+
+	@Override
+	public String getBrandName() {
+		// TODO Auto-generated method stub
+		return "Hero";
+	}
+
+}

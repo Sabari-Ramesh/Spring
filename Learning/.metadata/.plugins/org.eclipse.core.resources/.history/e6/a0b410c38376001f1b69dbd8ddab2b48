@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="blackInk" class="com.example.core.beans.BlackInk" />
+    
+    <bean id="fountainPen" class="com.example.core.beans.FountainPen">
+        <constructor-arg ref="blackInk"/> <!-- Corrected the reference here -->
+    </bean>
+    
+    <bean id="writer" class="com.example.core.beans.Writer">
+        <constructor-arg ref="fountainPen"/>
+    </bean>
+
+</beans>
