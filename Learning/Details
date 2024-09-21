@@ -1,1 +1,14 @@
 Task_2 => it represent Task Given During Trainning (19-09-2024)
+
+
+Dependency Injection Annotation :
+
+@Qualifier =>  https://www.java4coding.com/contents/spring/spring3.2/spring-qualifier-annotation
+(File Location : [ Task_2->QualifierAnnotation ] )
+
+
+Difference Between @Qualifier And @primary => https://bootcamptoprod.com/spring-framework-primary-vs-qualifier/
+
+
+@Lazy => https://www.java4coding.com/contents/spring/spring3.2/spring-lazy-annotation
+( File Location : [ Task_2_->ValueAnnotation] )
