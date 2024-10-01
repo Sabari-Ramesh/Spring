@@ -5,10 +5,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import main.DAO.MealDetailsRepository;
 import main.DAO.UserRepo;
-import main.DTO.MealDetailsDTO;
 import main.entity.MealDetails;
 import main.entity.Users;
 
@@ -21,12 +21,17 @@ public class MealDetailsBo {
 	@Autowired
 	private UserRepo userRepo;
 
-	// Insert
-
+	// Insert	
+	
+	@Transactional
 	public MealDetails insertMealDetails(MealDetails mealDetail) {
-		MealDetails insertedDetail = mealDetailRepo.save(mealDetail);
-		return insertedDetail;
+//	    Users user=userRepo.findById(mealDetail.getUser().getId()).get();
+//	    mealDetail.setUser(user);
+		
+	    return mealDetailRepo.save(mealDetail);
 	}
+
+	
 
 	// Find BY Id
 

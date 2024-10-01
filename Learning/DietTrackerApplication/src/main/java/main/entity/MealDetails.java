@@ -31,7 +31,7 @@ public class MealDetails {
     private LocalDate mealDate;
 
     
-    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @ManyToOne //(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @JsonIgnore
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
@@ -148,12 +148,16 @@ public class MealDetails {
 		this.lastUpdate = lastUpdate;
 	}
 
+//	@Override
+//	public String toString() {
+//		return "MealDetails [id=" + id + ", mealType=" + mealType + ", mealDate=" + mealDate + ", user=" + user
+//				+ ", foodName=" + foodName + ", quantity=" + quantity + ", calories=" + calories + ", protein="
+//				+ protein + ", carboHydrate=" + carboHydrate + ", vitamins=" + vitamins + ", dateCreated=" + dateCreated
+//				+ ", lastUpdate=" + lastUpdate + "]";
+//	}
 
 
-    @Override
-    public String toString() {
-        return "MealDetails [id=" + id + ", mealType=" + mealType + ", mealDate=" + mealDate + ", foodName=" + foodName + ", quantity=" + quantity + ", calories=" + calories + ", protein="
-                + protein + ", carboHydrate=" + carboHydrate + ", vitamins=" + vitamins + ", dateCreated=" 
-                + dateCreated + ", lastUpdate=" + lastUpdate + "]";
-    }
+
+   
+    
 }

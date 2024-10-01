@@ -101,8 +101,10 @@ public class DietTrackerApplication {
 		
 		System.out.println("Enter User id :");
 		user.setId(sc.nextLong());
+		
 		mealDetail.setUser(user);
-
+System.out.println("Foreign Key"+mealDetail.getUser()); //-------------------------------------------
+		
 		System.out.println("Enter the Meal  Type :");
 		System.out.println("1.BreakFast\n2.Lunch\n3.Dinner\n4.Snacks");
 		mealDetail.setMealType(sc.nextInt());
@@ -133,8 +135,11 @@ public class DietTrackerApplication {
 
 		System.out.println("Enter CarboHydrate :");
 		mealDetail.setCarboHydrate(sc.nextDouble());
+		
+		System.out.println("Main "+mealDetail);
 
 		response = mealDetailService.insertMealDetail(mealDetail);
+		
 
 		if (response.getSucessmessage() != null) {
 			System.out.println(response.getSucessmessage() + " for User Id " + response.getId());
@@ -219,8 +224,8 @@ public class DietTrackerApplication {
 		System.out.println("Enter User Name :");
 		String name=sc.nextLine();
 		user.setName(name);
-		
-		System.out.println("Enter the email :");
+		sc.nextLine();
+		System.out.println("Enter the email :");		
 		String email=sc.next();
 		user.setEmail(email);
 		

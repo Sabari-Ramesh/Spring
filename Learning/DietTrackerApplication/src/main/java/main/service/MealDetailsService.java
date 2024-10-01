@@ -28,12 +28,13 @@ public class MealDetailsService {
 	
 
 	// Insert
-	@Transactional
 	public ResponseHandle insertMealDetail(MealDetails mealDetail) {
 		
-		
+		System.out.println("Serive "+mealDetail);
 		MealDetails insertedDetail = mealDetailBo.insertMealDetails(mealDetail);
-
+        
+		
+		System.out.println(mealDetail+"Service ");
 		long id = insertedDetail.getId();
 
 		if (id > 0) {
