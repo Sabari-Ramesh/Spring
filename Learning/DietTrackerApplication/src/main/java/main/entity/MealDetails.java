@@ -5,6 +5,9 @@ import java.time.LocalDate;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -22,13 +25,14 @@ public class MealDetails {
     private long id;
 
     @Column(name="meal_type", nullable = false)
-    private int mealType; // Renamed to follow Java naming conventions
+    private int mealType; 
 
     @Column(name="meal_date", nullable = false)
-    private String mealDate; // Consider using LocalDate for better date handling
+    private LocalDate mealDate;
 
     
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @JsonIgnore
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
 
@@ -40,6 +44,7 @@ public class MealDetails {
     private double vitamins;
 
     @CreationTimestamp
+    @Column(updatable = false)
     private LocalDate dateCreated;
 
     @UpdateTimestamp
@@ -63,11 +68,11 @@ public class MealDetails {
         this.mealType = mealType;
     }
 
-    public String getMealDate() {
+    public LocalDate getMealDate() {
         return mealDate;
     }
 
-    public void setMealDate(String mealDate) {
+    public void setMealDate(LocalDate mealDate) {
         this.mealDate = mealDate;
     }
 
@@ -135,11 +140,20 @@ public class MealDetails {
         return lastUpdate;
     }
 
-//    @Override
-//    public String toString() {
-//        return "MealDetails [id=" + id + ", mealType=" + mealType + ", mealDate=" + mealDate + ", user=" + user
-//                + ", foodName=" + foodName + ", quantity=" + quantity + ", calories=" + calories + ", protein="
-//                + protein + ", carboHydrate=" + carboHydrate + ", vitamins=" + vitamins + ", dateCreated=" 
-//                + dateCreated + ", lastUpdate=" + lastUpdate + "]";
-//    }
+	public void setDateCreated(LocalDate dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+
+	public void setLastUpdate(LocalDate lastUpdate) {
+		this.lastUpdate = lastUpdate;
+	}
+
+
+
+    @Override
+    public String toString() {
+        return "MealDetails [id=" + id + ", mealType=" + mealType + ", mealDate=" + mealDate + ", foodName=" + foodName + ", quantity=" + quantity + ", calories=" + calories + ", protein="
+                + protein + ", carboHydrate=" + carboHydrate + ", vitamins=" + vitamins + ", dateCreated=" 
+                + dateCreated + ", lastUpdate=" + lastUpdate + "]";
+    }
 }

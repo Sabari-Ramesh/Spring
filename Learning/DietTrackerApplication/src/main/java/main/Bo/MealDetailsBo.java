@@ -1,12 +1,14 @@
 package main.Bo;
 
-import java.util.Optional;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import jakarta.transaction.Transactional;
 import main.DAO.MealDetailsRepository;
 import main.DAO.UserRepo;
+import main.DTO.MealDetailsDTO;
 import main.entity.MealDetails;
 import main.entity.Users;
 
@@ -19,39 +21,55 @@ public class MealDetailsBo {
 	@Autowired
 	private UserRepo userRepo;
 
-// Insert 	
+	// Insert
 
-	public void insertDetail(MealDetails mealDetails) {
-		mealDetailRepo.save(mealDetails);
+	public MealDetails insertMealDetails(MealDetails mealDetail) {
+		MealDetails insertedDetail = mealDetailRepo.save(mealDetail);
+		return insertedDetail;
 	}
 
-//Find By Id	
+	// Find BY Id
 
-	public void findByMealId(long id) {
-		Optional<MealDetails> mealDetailsOpt = mealDetailRepo.findById(id);
-		MealDetails mealDetails = mealDetailsOpt.get();
-		System.out.println("Meal found: " + mealDetails);
-
+	public MealDetails findByMealId(MealDetails mealDetail) {
+		long id = mealDetail.getId();
+		MealDetails fetchedDetail = mealDetailRepo.findById(id).get();
+		return fetchedDetail;
 	}
 
-//Update 	
+	// Update
 
-	public void update(long id) {
-		MealDetails mealDetail = mealDetailRepo.findById(id).get();
-		mealDetail.setFoodName("Jamanun");
-		mealDetailRepo.save(mealDetail);
+	
+	public MealDetails updateMealDetail(MealDetails mealDetail) {
+		long id=mealDetail.getId();
+		MealDetails updateDetail=mealDetailRepo.findById(id).get();
+		updateDetail.setFoodName(mealDetail.getFoodName());
+		updateDetail=mealDetailRepo.save(updateDetail);
+		return updateDetail;
 	}
 
-// Delete	
-
-	public void delete(long id) {
-		MealDetails mealDetail = mealDetailRepo.findById(id).get();
-		System.out.println(mealDetail);
-		mealDetailRepo.delete(mealDetail);
+	//Delete
+	
+	public boolean deleteId(MealDetails mealDetail) {
+		
+		System.out.println("Bo "+mealDetail.getId());
+		long id=mealDetail.getId();
+		mealDetailRepo.deleteById(id);
+		return true;
+		
 	}
 
-	public void MealDetailsWithUsers(Users user) {
-		userRepo.save(user);
+	//Custom Querry Find By UserID :
+	
+	public List<MealDetails> findMealDetailsByUserId(long id) {
+		List<MealDetails> list=mealDetailRepo.findMealDetailsByUserId(id);
+		return list;
+	}
+
+	//User Association
+	
+	public Users associationUserWithMealDetails(Users user) {
+	Users insertedUser=userRepo.save(user);	
+	return insertedUser;
 	}
 
 }

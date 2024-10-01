@@ -1,7 +1,13 @@
 package main.entity;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -28,22 +34,45 @@ public class Users {
     private String password;
 
     @Column(nullable = false)
-    private int gender; // 0 for male, 1 for female, etc.
+    private int gender;
 
     @Column(nullable = false)
-    private String dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @Column(unique = true)
     private long mobileNumber;
 
     private int city;
     
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<MealDetails> mealDetails= new ArrayList<>();;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @JsonIgnore
+    private List<MealDetails> mealDetails= new ArrayList<>();
+    
+    @CreationTimestamp
+    private LocalDate dateCreated;
+
+    @UpdateTimestamp
+    private LocalDate lastUpdate;
 
     // Getters and Setters
 
-    public long getId() {
+    public LocalDate getDateCreated() {
+		return dateCreated;
+	}
+
+	public void setDateCreated(LocalDate dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+
+	public LocalDate getLastUpdate() {
+		return lastUpdate;
+	}
+
+	public void setLastUpdate(LocalDate lastUpdate) {
+		this.lastUpdate = lastUpdate;
+	}
+
+	public long getId() {
         return id;
     }
 
@@ -83,11 +112,11 @@ public class Users {
         this.gender = gender;
     }
 
-    public String getDateOfBirth() {
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(String dateOfBirth) {
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 
@@ -115,10 +144,10 @@ public class Users {
         this.mealDetails = mealDetails;
     }
 
-//    @Override
-//    public String toString() {
-//        return "Users [id=" + id + ", name=" + name + ", email=" + email + ", password=" + password + ", gender=" 
-//                + gender + ", dateOfBirth=" + dateOfBirth + ", mobileNumber=" + mobileNumber + ", city=" + city 
-//                + ", mealDetails=" + mealDetails + "]";
-//    }
+    @Override
+    public String toString() {
+        return "Users [id=" + id + ", name=" + name + ", email=" + email + ", password=" + password + ", gender=" 
+                + gender + ", dateOfBirth=" + dateOfBirth + ", mobileNumber=" + mobileNumber + ", city=" + city 
+                + "]";
+    }
 }

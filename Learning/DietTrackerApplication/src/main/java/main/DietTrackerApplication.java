@@ -1,6 +1,9 @@
 package main;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +11,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
+import main.DTO.MealDetailsDTO;
+import main.DTO.UsersDTO;
+import main.Response.ResponseHandle;
 import main.entity.MealDetails;
 import main.entity.Users;
 import main.service.MealDetailsService;
@@ -17,6 +23,15 @@ public class DietTrackerApplication {
 
 	@Autowired
 	private MealDetailsService mealDetailService;
+
+	@Autowired
+	private MealDetailsDTO mealDetailDto;
+
+	@Autowired
+	private UsersDTO userDto;
+
+	@Autowired
+	private ResponseHandle response;
 
 	Scanner sc = new Scanner(System.in);
 
@@ -32,7 +47,7 @@ public class DietTrackerApplication {
 		while (flag) {
 			System.out.println("\t\t\t\tMenu");
 			System.out.println(
-					"\t\t\t1.insert\n\t\t\t2.Find By MealDetail Id\n\t\t\t3.Update\n\t\t\t4.DeleteByID\n\t\t\t5.Association MealDetails with User\n\t\t\t6.exit");
+					"\t\t\t1.insert\n\t\t\t2.Find By MealDetail Id\n\t\t\t3.Update\n\t\t\t4.DeleteByID\n\t\t\t5.Find MealDetails with User id\n\t\t\t6.Association User With MealDetails\n\t\t\t7.exit");
 			System.out.println("Enter your Option");
 			int option = sc.nextInt();
 
@@ -52,14 +67,17 @@ public class DietTrackerApplication {
 			}
 			case 4: {
 				application.delete();
-				System.out.println("kk");
 				break;
 			}
-			case 5:{
-				application.MealDetailsWithUsers();
+			case 5: {
+				application.findMealDetailsByUserId();
 				break;
 			}
 			case 6: {
+				 application.associationUserWithMealDetails();
+				break;
+			}
+			case 7: {
 				flag = false;
 				break;
 			}
@@ -74,162 +92,213 @@ public class DietTrackerApplication {
 	}
 
 
-//INSERT 
+	// INSERT
 
 	private void insert() {
-
-		MealDetails mealDetail = new MealDetails();
-		Users user = new Users();
-
-		System.out.println("Enter the Meal Type");
-		System.out.println("1. Breakfast\n2. Lunch\n3. Dinner\n4. Snacks");
-		int option = sc.nextInt();
-		if (option >= 1 && option <= 4) {
-			mealDetail.setMealType(option);
-		} else {
-			System.out.println("Invalid meal type, please try again.");
-			return;
-		}
-
-		System.out.print("Enter Meal Date (YYYY-MM-DD): ");
-		mealDetail.setMealDate(sc.next());
-
-		System.out.print("Enter User Id: ");
+       
+		MealDetails mealDetail=new MealDetails();
+		Users user=new Users();
+		
+		System.out.println("Enter User id :");
 		user.setId(sc.nextLong());
 		mealDetail.setUser(user);
 
-		System.out.print("Enter Food Name: ");
+		System.out.println("Enter the Meal  Type :");
+		System.out.println("1.BreakFast\n2.Lunch\n3.Dinner\n4.Snacks");
+		mealDetail.setMealType(sc.nextInt());
+
+		System.out.println("Enter The Date :");
+
+		String dateString = sc.next();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		LocalDate localDate = LocalDate.parse(dateString, formatter);
+
+		mealDetail.setMealDate(localDate);
+
+		System.out.println("Enter the Food Name :");
 		sc.nextLine();
 		mealDetail.setFoodName(sc.nextLine());
 
-		System.out.print("Enter Quantity: ");
+		System.out.println("Enter the Quantity :");
 		mealDetail.setQuantity(sc.nextDouble());
 
-		System.out.print("Enter Calories: ");
-		mealDetail.setCalories(sc.nextDouble());
-
-		System.out.print("Enter Protein: ");
+		System.out.println("Enter the Protein :");
 		mealDetail.setProtein(sc.nextDouble());
 
-		System.out.print("Enter Carbohydrate: ");
-		mealDetail.setCarboHydrate(sc.nextDouble());
-
-		System.out.print("Enter the Vitamins: ");
+		System.out.println("Enter the Vitamin :");
 		mealDetail.setVitamins(sc.nextDouble());
 
-		mealDetailService.insertMealDetail(mealDetail);
-		System.out.println("Meal details inserted successfully!");
+		System.out.println("Enter the Calories :");
+		mealDetail.setCalories(sc.nextDouble());
 
-		System.out.println("---------------------------------------------------------------------");
+		System.out.println("Enter CarboHydrate :");
+		mealDetail.setCarboHydrate(sc.nextDouble());
+
+		response = mealDetailService.insertMealDetail(mealDetail);
+
+		if (response.getSucessmessage() != null) {
+			System.out.println(response.getSucessmessage() + " for User Id " + response.getId());
+		}
 
 	}
 
-//Find By Meal Id
+	// Find By Meal Id
 
 	private void findByMealId() {
-		System.out.println("Enter the Meal Id :");
+	
+		MealDetails mealDetail=new MealDetails();
+		
+		System.out.println("Enter Meal Id :");
 		long id = sc.nextLong();
-		mealDetailService.findByMealId(id);
-		System.out.println("Sucessfully Fetched");
+
+		mealDetail.setId(id);
+
+		response = mealDetailService.findByMealId(mealDetail);
+
+		if (response.getSucessmessage() != null) {
+			System.out.println(response.getSucessmessage() + " for User Id " + id);
+			System.out.println(response.getMealDetail().toString());
+		}
 
 	}
 
-//Update
+	// Update
 
 	private void update() {
+
+		MealDetails mealDetail=new MealDetails();
+		
 		System.out.println("Enter the Meal Id to Update :");
 		long id = sc.nextLong();
-		mealDetailService.update(id);
-		System.out.println("Sucessfully Updated..");
+		mealDetail.setId(id);
+		System.out.println("Enter Food Name To Update :");
+		sc.nextLine();
+		String foodName = sc.nextLine();
+		mealDetail.setFoodName(foodName);
+		response = mealDetailService.updateMealDetail(mealDetail);
+		
+		if (response.getSucessmessage() != null) {
+			System.out.println(response.getSucessmessage() + " for User Id " + id);
+		}
+
 	}
 
-//Delete	
+	// Delete
 
 	private void delete() {
-		System.out.println("Enter the Id to Delete :");
+		
+		MealDetails mealDetail=new MealDetails();
+		
+		System.out.println("Enter the id To Delete :");
+		long id = sc.nextLong();
+		mealDetail.setId(id);
+
+		response = mealDetailService.deleteId(mealDetail);
+		if (response.getSucessmessage() != null) {
+			System.out.println(response.getSucessmessage() + " for User Id " + id);
+		}
+
+	}
+
+	// Custom Querry
+	
+	private void findMealDetailsByUserId() {	
+		System.out.println("Enter the User id :");
 		long id=sc.nextLong();
-		mealDetailService.delete(id);
-		System.out.println("Sucessfully Deleted...");
-	}
-
-//MealDetails With User	
-	
-	private void MealDetailsWithUsers() {
-	    Users user = new Users();
-	    
-	    System.out.println("Enter Name:");
-	    user.setName(sc.nextLine());
-	    System.out.println("Enter email:");
-	    user.setEmail(sc.nextLine());
-	    System.out.println("Enter Password:");
-	    user.setPassword(sc.nextLine());
-	    
-	    System.out.println("1. Male\n2. Female\n3. Others");
-	    System.out.println("Enter Gender:");
-	    int option = sc.nextInt();
-	    if (option >= 1 && option <= 3) {
-	        user.setGender(option);
-	    }
-	    
-	    System.out.println("Enter The Date Of Birth:");
-	    user.setDateOfBirth(sc.next());
-	    
-	    System.out.println("Enter Mobile Number:");
-	    user.setMobileNumber(sc.nextLong());
-	    
-	    System.out.println("Enter City:");
-	    user.setCity(sc.nextInt());
-	    
-	    
-	    user.setMealDetails(new ArrayList<>()); 
-
-	    System.out.println("Enter the Number of Meal Details Association with User:");
-	    int n = sc.nextInt();
-	    sc.nextLine(); 
-
-	    for (int i = 0; i < n; i++) {
-	        MealDetails mealDetail = new MealDetails();
-
-	        System.out.println("Enter the Meal Type");
-	        System.out.println("1. Breakfast\n2. Lunch\n3. Dinner\n4. Snacks");
-	        int opt = sc.nextInt();
-	        if (opt >= 1 && opt <= 4) {
-	            mealDetail.setMealType(opt);
-	        } else {
-	            System.out.println("Invalid meal type, please try again.");
-	            return;
-	        }
-
-	        System.out.print("Enter Meal Date (YYYY-MM-DD): ");
-	        mealDetail.setMealDate(sc.next());
-	        
-	        System.out.print("Enter Food Name: ");
-	        sc.nextLine();
-	        mealDetail.setFoodName(sc.nextLine());
-	        
-	        System.out.print("Enter Quantity: ");
-	        mealDetail.setQuantity(sc.nextDouble());
-
-	        System.out.print("Enter Calories: ");
-	        mealDetail.setCalories(sc.nextDouble());
-
-	        System.out.print("Enter Protein: ");
-	        mealDetail.setProtein(sc.nextDouble());
-
-	        System.out.print("Enter Carbohydrate: ");
-	        mealDetail.setCarboHydrate(sc.nextDouble());
-
-	        System.out.print("Enter the Vitamins: ");
-	        mealDetail.setVitamins(sc.nextDouble());
-
-	       
-	        mealDetail.setUser(user); 
-	        user.getMealDetails().add(mealDetail); 
-	    } // for Loop
-
-	   
-	    mealDetailService.MealDetailsWithUsers(user);
+		response=mealDetailService.findMealDetailsByUserId(id);
+		if (response.getSucessmessage() != null) {
+			System.out.println(response.getSucessmessage() + " for User Id " + id);
+		}
 	}
 	
+	//Association User with mealDetail
+	private void associationUserWithMealDetails() {
+		
+		Users user=new Users();
+		
+		System.out.println("Enter User Name :");
+		String name=sc.nextLine();
+		user.setName(name);
+		
+		System.out.println("Enter the email :");
+		String email=sc.next();
+		user.setEmail(email);
+		
+		System.out.println("Enter the password :");
+		String password=sc.next();
+		user.setPassword(password);
+		
+		
+		System.out.println("Enter Date of Birth :");
+		String dateString = sc.next();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		LocalDate localDate = LocalDate.parse(dateString, formatter);
+		user.setDateOfBirth(localDate);
+		
+		
+		System.out.println("Enter Mobile Number :");
+		long mobile=sc.nextLong();
+		user.setMobileNumber(mobile);
+		
+		System.out.println("Enter the city :");
+		int city=sc.nextInt();
+		user.setCity(city);
+		
+		System.out.println("Enter Number of Meal Details :");
+		int n=sc.nextInt();
+		
+		List<MealDetails> list=new ArrayList<>();
+		
+		for(int i=0;i<n;i++) {
+			
+			MealDetails mealDetail=new MealDetails();
+			
+			System.out.println("Enter the Meal  Type :");
+			System.out.println("1.BreakFast\n2.Lunch\n3.Dinner\n4.Snacks");
+			mealDetail.setMealType(sc.nextInt());
+
+			System.out.println("Enter The Date :");
+
+			String date = sc.next();
+			DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			localDate = LocalDate.parse(date, format);
+			mealDetail.setMealDate(localDate);
+
+			System.out.println("Enter the Food Name :");
+			sc.nextLine();
+			mealDetail.setFoodName(sc.nextLine());
+
+			System.out.println("Enter the Quantity :");
+			mealDetail.setQuantity(sc.nextDouble());
+
+			System.out.println("Enter the Protein :");
+			mealDetail.setProtein(sc.nextDouble());
+
+			System.out.println("Enter the Vitamin :");
+			mealDetail.setVitamins(sc.nextDouble());
+
+			System.out.println("Enter the Calories :");
+			mealDetail.setCalories(sc.nextDouble());
+
+			System.out.println("Enter CarboHydrate :");
+			mealDetail.setCarboHydrate(sc.nextDouble());
+			
+			mealDetail.setUser(user);
+			
+			list.add(mealDetail);
+			
+		}
+		
+		user.setMealDetails(list);		
+		response=mealDetailService.associationUserWithMealDetails(user);
+		
+		long id=response.getId();
+		if(id>0) {
+			System.out.println(response.getSucessmessage()+" "+id);
+		}else {
+			System.out.println(response.getFailuremessage());
+		}
+		
+	}
 
 }
