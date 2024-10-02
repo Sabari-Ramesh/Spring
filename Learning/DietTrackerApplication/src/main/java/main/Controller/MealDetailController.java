@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -36,11 +37,15 @@ public class MealDetailController {
 	
 	@Autowired
 	private MealDetailsService mealDetailsService;
+	
+	Logger log=Logger.getLogger(MealDetailController.class);
 
 	// 2. Insert Meal Detail
 
 	@PostMapping("/add")
 	public ResponseEntity<?> insertMealDetail(@RequestBody MealDetailsDTO mealDetailDto) {
+		
+		log.info("insert Method is triggred...");
 
 		// Convert DTO to Entity
 		MealDetails mealDetail = new MealDetails();
@@ -61,17 +66,24 @@ public class MealDetailController {
 			mealDetailDto.setDateCreated(inserted.getDateCreated());
 			mealDetailDto.setLastUpdate(inserted.getLastUpdate());
 			mealDetailDto.setId(inserted.getId());
-			return ResponseEntity.ok(mealDetailDto);
+			log.info("Meal Details is Sucessfully Created "+mealDetailDto.getId());
+			return ResponseEntity.ok("Meal Details are Sucessfully Created and Your Generated Meal Id : "+mealDetailDto.getId());
+			
 
 		} catch (DataIntegrityViolationException | UserNotFound e) {
+			log.error("Duplicate Entry : "+e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		} catch (DateException e) {
+			log.error("Date Error :"+e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		} catch (QuantityException e) {
+			log.error("Qunatity Error :"+e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		} catch (FoodNameException e) {
+			log.error("Food Name Error :"+e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		} catch (MealTypeException e) {
+			log.error("Meal Type Error :"+e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 
@@ -82,6 +94,7 @@ public class MealDetailController {
 	@GetMapping("/mealid=/{id}")
 	public ResponseEntity<?> findByMealId(@PathVariable("id") long id) {
 
+		log.info("Find By id Method is triggred...");
 		MealDetailsDTO mealDetailDto = new MealDetailsDTO();
 		MealDetails mealDetail = new MealDetails();
 		mealDetail.setId(id);
@@ -90,9 +103,11 @@ public class MealDetailController {
 
 			ResponseHandle response = mealDetailsService.findByMealId(mealDetail);
 			MealDetails fetchedDetail = response.getMealDetail();
+			log.info(fetchedDetail);
 			return ResponseEntity.ok(mapToDto(fetchedDetail));
 
 		} catch (MealIdNotFoundException e) {
+			log.error("Meal Id Not Found Error :"+e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 
@@ -102,7 +117,8 @@ public class MealDetailController {
 
 	@GetMapping("/findall")
 	public List<MealDetailsDTO> findAll() {
-
+		
+		log.info("Find All Method is triggred...");
 		ResponseHandle response = mealDetailsService.fetchAll();
 		List<MealDetails> mealDetailList = response.getMealDetailsList();
 		List<MealDetailsDTO> mealDetailsDto = new ArrayList<>();
@@ -111,7 +127,7 @@ public class MealDetailController {
 			MealDetailsDTO getDetail = mapToDto(mealDetail);
 			mealDetailsDto.add(getDetail);
 		}
-
+		log.info(mealDetailsDto);
 		return mealDetailsDto;
 	}
 
@@ -119,6 +135,8 @@ public class MealDetailController {
 
 	@GetMapping("/userid=/{userId}")
 	public ResponseEntity<?> findMealDetailsByUserId(@PathVariable("userId") long userId) {
+		
+		log.info("Find Meal Details By User ID(custom Querry ) Method is triggred...");
 
 		try {
 
@@ -132,12 +150,15 @@ public class MealDetailController {
 			}
 
 			if (!listDto.isEmpty()) {
+				log.info(listDto);
 				return ResponseEntity.ok(listDto);
 			} else {
+				log.info("No Details Available");
 				return ResponseEntity.status(HttpStatus.ACCEPTED).body("No Details Available");
 			}
 
 		} catch (UserNotFound e) {
+			log.error("User Not Found Error : "+e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 
@@ -148,23 +169,67 @@ public class MealDetailController {
 	@GetMapping("/namedwithaggregate")
 	public ResponseEntity<?> getAvgCaloriesByDateRange(@RequestBody Map<String, String> dateRange) {
 
+		log.info("Named Querry with Aggregate Method is triggred...");
 		LocalDate startDate = LocalDate.parse(dateRange.get("startDate"));
 		LocalDate endDate = LocalDate.parse(dateRange.get("endDate"));
 		try {
 			
 		ResponseHandle response = mealDetailsService.avgCaloriesByDateRange(startDate, endDate);
 		double avgCalories = response.getCalories();
-		return ResponseEntity.ok(avgCalories);
+		log.info("Average Calories "+avgCalories);
+		return ResponseEntity.ok("Average Calories "+avgCalories);
 		}catch(DateException e) {
+			log.error("Date Error :"+e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 
 	}
+	
+	//7. Custom Querry with Projection
 
-	// 7. Custom With Projection
+		@GetMapping("/customprojection")
+		public List<MealDetailsProjection> findCustomMealDetails() {
+			
+			log.info("Custom Querry with Projection Method is triggred...");
+			ResponseHandle response = mealDetailsService.findCustomMealDetails();
+
+			List<MealDetailsProjection> mealDetail = response.getMealDetailProjection();
+			log.info(mealDetail);
+			return mealDetail;
+
+		}
+
+	
+	// 9.Named With Projection
+
+	@GetMapping("/groupedQuantityAndCalories")
+	public ResponseEntity<?> getAvgCaloriesAndTotalQuantity(@RequestParam("calorieThreshold") double calorieThreshold) {
+		
+		log.info("Named With Projection Method is triggred...");
+		try {
+
+			ResponseHandle response = mealDetailsService.findAvgCaloriesAndTotalQuantity(calorieThreshold);
+			List<MealSummary> summary = response.getMealSummary();
+			if (summary != null && !summary.isEmpty()) {
+				log.info(summary);
+				return ResponseEntity.ok(summary);
+			}else{
+				log.info("NO Details Available");
+				return ResponseEntity.status(HttpStatus.ACCEPTED).body("No Details Available");
+			}
+
+		} catch (QuantityException e) {
+			log.error("Quantity Error :"+e);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		}
+	}
+	
+//  User Assciation
 
 	@PostMapping("/associate-meal-details")
 	public ResponseEntity<?> associateUserWithMealDetails(@RequestBody UsersDTO userDto) {
+		
+		log.info("User Association Method is triggred...");
 
 		Users user = new Users();
 		user.setName(userDto.getName());
@@ -193,50 +258,40 @@ public class MealDetailController {
 		user.setMealDetails(mealDetailsList);
 		try {
 			ResponseHandle response = mealDetailsService.associationUserWithMealDetails(user);
-			return ResponseEntity.ok(response);
+			log.info(response.getSucessmessage());
+			return ResponseEntity.ok(response.getSucessmessage());
 		} catch (InValidCityId e) {
+			log.error("InValid City Error :"+e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		} catch (FoodNameException e) {
+			log.error("InValid Food Name Error :"+e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		} catch (InValidEmailException e) {
+			log.error("InValid Error :"+e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		} catch (DataIntegrityViolationException e) {
+			log.error("Duplicate Entry Error :"+e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate Entry ");
 		} catch (DateException e) {
+			log.error("InValid Date Error :"+e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		} catch (QuantityException e) {
+			log.error("InValid Quantity Error :"+e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		} catch (MealTypeException e) {
+			log.error("InValid Meal Type Error :"+e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 
 	}
 
-	// 9.Named With Projection
-
-	@GetMapping("/groupedQuantityAndCalories")
-	public ResponseEntity<?> getAvgCaloriesAndTotalQuantity(@RequestParam("calorieThreshold") double calorieThreshold) {
-
-		try {
-
-			ResponseHandle response = mealDetailsService.findAvgCaloriesAndTotalQuantity(calorieThreshold);
-			List<MealSummary> summary = response.getMealSummary();
-			if (!summary.isEmpty()) {
-				return ResponseEntity.ok(summary);
-			} else {
-				return ResponseEntity.status(HttpStatus.ACCEPTED).body("No Details Available");
-			}
-
-		} catch (QuantityException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-		}
-
-	}
 
 	// Update Meal Detail
 
 	@PutMapping("/update")
 	public ResponseEntity<?> updateMealDetail(@RequestBody MealDetailsDTO mealDetailDto) {
+		
+		log.info("Update Method is triggred...");
 
 		MealDetails mealDetail = new MealDetails();
 		mealDetail.setId(mealDetailDto.getId());
@@ -244,10 +299,13 @@ public class MealDetailController {
 		try {
 			ResponseHandle response = mealDetailsService.updateMealDetail(mealDetail);
 			MealDetails fetchedDetail = response.getMealDetail();
+			log.info(fetchedDetail);
 			return ResponseEntity.ok(mapToDto(fetchedDetail));
 		} catch (MealIdNotFoundException e) {
+			log.error("Meal Id Not Found Error :"+e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		} catch (FoodNameException e) {
+			log.error("InValid Food Name Error :"+e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 
@@ -257,28 +315,22 @@ public class MealDetailController {
 	@DeleteMapping("/deletemealid=/{id}")
 	public ResponseEntity<?> deleteMealDetail(@PathVariable("id") long id) {
 
+		log.info("Delete Method is triggred...");
 		MealDetails mealDetail = new MealDetails();
 		mealDetail.setId(id);
 
 		try {
 			ResponseHandle response = mealDetailsService.deleteId(mealDetail);
+			log.info(response.getId() + " Sucessfully Deleted");
 			return ResponseEntity.ok(response.getId() + " Sucessfully Deleted");
 		} catch (MealIdNotFoundException e) {
+			log.error("Id Not Found Error :"+e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 
 	}
 
-	// Custom Queery with Projection
-
-	@GetMapping("/customprojection")
-	public List<MealDetailsProjection> findCustomMealDetails() {
-		ResponseHandle response = mealDetailsService.findCustomMealDetails();
-
-		List<MealDetailsProjection> mealDetail = response.getMealDetailProjection();
-		return mealDetail;
-
-	}
+	
 
 	//Convert DTO TO Entity
 	

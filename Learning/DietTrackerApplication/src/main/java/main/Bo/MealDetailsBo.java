@@ -1,6 +1,7 @@
 package main.Bo;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,14 +9,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
-import jakarta.transaction.Transactional;
 import main.DAO.MealDetailsProjection;
 import main.DAO.MealDetailsRepository;
 import main.DAO.MealSummary;
 import main.DAO.UserRepo;
+import main.Exceptions.DateException;
+import main.Exceptions.FoodNameException;
+import main.Exceptions.InValidCityId;
+import main.Exceptions.InValidEmailException;
+import main.Exceptions.MealIdNotFoundException;
+import main.Exceptions.MealTypeException;
+import main.Exceptions.QuantityException;
+import main.Exceptions.UserNotFound;
 import main.entity.MealDetails;
 import main.entity.Users;
-import main.Exceptions.*;
 
 @Component
 public class MealDetailsBo {
@@ -80,7 +87,9 @@ public class MealDetailsBo {
 
 		validDates(startDate,endDate);
 		Double avgCalorie = mealDetailRepo.findAvgCaloriesByDateRange(startDate, endDate);
-		System.out.println("Double " + avgCalorie);
+		if (avgCalorie == null) {
+			 return 0.0;
+		}
 		return avgCalorie;
 
 	}
@@ -96,13 +105,19 @@ public class MealDetailsBo {
 	}
 
 	//9. Named Querry with Clauses
-
+	
 	public List<MealSummary> findAvgCaloriesAndTotalQuantity(double calorie) throws QuantityException {
-		validQuantity(calorie," Calorie");
-		List<MealSummary> mealSummary = mealDetailRepo.findAvgCaloriesAndTotalQuantity(calorie);
-		return mealSummary;
 
+	    validQuantity(calorie, "Calorie");
+	    List<MealSummary> mealSummary = mealDetailRepo.findAvgCaloriesAndTotalQuantity(calorie);
+	    if (mealSummary == null || mealSummary.isEmpty()) {
+	        return new ArrayList<>(); 
+	    }
+	    return mealSummary;
+	    
 	}
+
+	
 	
 	// Update
 

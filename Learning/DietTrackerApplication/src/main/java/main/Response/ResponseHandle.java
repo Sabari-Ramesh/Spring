@@ -48,8 +48,11 @@ public class ResponseHandle {
 	public String getSucessmessage() {
 		return sucessMessage;
 	}
-	public void setSucessmessage(String sucessMessage) {
-		sucessMessage = sucessMessage;
+	public String getSucessMessage() {
+		return sucessMessage;
+	}
+	public void setSucessMessage(String sucessMessage) {
+		this.sucessMessage = sucessMessage;
 	}
 	public String getFailuremessage() {
 		return failuremessage;

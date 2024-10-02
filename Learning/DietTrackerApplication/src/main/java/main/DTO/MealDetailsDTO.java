@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import main.entity.Users;
 
@@ -16,6 +17,7 @@ public class MealDetailsDTO {
 	private int mealType;
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private LocalDate mealDate;
+	//@JsonIgnore
 	private Users user;
 	private String foodName;
 	private double quantity;

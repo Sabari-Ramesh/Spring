@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -39,15 +41,22 @@ public class DietTrackerApplication {
 	private ResponseHandle response;
 
 	Scanner sc = new Scanner(System.in);
-
+	
+    
+	static Logger log=Logger.getLogger(DietTrackerApplication.class);
+	
 	public static void main(String[] args) {
+		
 		ApplicationContext context = SpringApplication.run(DietTrackerApplication.class, args);
 		DietTrackerApplication application = context.getBean(DietTrackerApplication.class);
+		
+    	PropertyConfigurator.configure("D:\\SpringWorkSpace\\DietTrackerApplication\\src\\main\\java\\log4j\\log4j.properties");
+    	log.info(" Application Started Started..");
 
 		Scanner sc = new Scanner(System.in);
 
 		boolean flag = true;
-		System.out.println("/t/t------DietTracker Application------");
+		System.out.println("/t/t------dietTracker application------");
 
 		while (flag) {
 			System.out.println("\t\t\t\tMenu");
@@ -275,28 +284,32 @@ public class DietTrackerApplication {
 	}
 
 	// 9. Named with Clauses
-
+	
 	private void findAvgCaloriesAndTotalQuantity() {
 
-		System.out.println("Enter the Calories :");
-		double calorie = sc.nextDouble();
+	    System.out.println("Enter the Calories :");
+	    double calorie = sc.nextDouble();
 
-		try {
+	    try {
+	        response = mealDetailService.findAvgCaloriesAndTotalQuantity(calorie);
+	        List<MealSummary> mealSummary = response.getMealSummary();
+	        if (mealSummary != null && !mealSummary.isEmpty()) {
+	            System.out.println(response.getSucessmessage());
+	            for (MealSummary summary : mealSummary) {
+	                System.out.print(summary.getAvgCalories() + " " + summary.getTotalQuantity());
+	                System.out.println();
+	            }
 
-			response = mealDetailService.findAvgCaloriesAndTotalQuantity(calorie);
-			List<MealSummary> mealSummary = response.getMealSummary();
-			if (mealSummary.size() > 0) {
-				System.out.println(response.getSucessmessage());
-				for (int i = 0; i < mealSummary.size(); i++) {
-					MealSummary summary = mealSummary.get(i);
-					System.out.print(summary.getAvgCalories() + " " + summary.getTotalQuantity());
-				}
-			} else {
-				System.out.println(response.getFailuremessage());
-			}
-		} catch (QuantityException e) {
-			System.err.println(e.getMessage());
-		}
+	        } else if (mealSummary == null || mealSummary.isEmpty()) {
+	            System.out.println(response.getSucessmessage());
+
+	        } else {
+	            System.out.println(response.getFailuremessage());
+	        }
+	    } catch (QuantityException e) {
+	        System.err.println(e.getMessage());
+	    }
+	    
 	}
 
 	// Update

@@ -1,8 +1,10 @@
 package main.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -35,18 +37,21 @@ public class MealDetailsService {
 
 	@Autowired
 	private ResponseHandle response;
+	
+	
+	Logger log=Logger.getLogger(MealDetailsService.class);
 
 	// 2. Insert
 
 	@Transactional
 	public ResponseHandle insertMealDetail(MealDetails mealDetail) throws UserNotFound, DataIntegrityViolationException,
 			DateException, QuantityException, FoodNameException, MealTypeException {
-
+		log.info("insert Method is triggred...");
 		MealDetails insertedDetail = mealDetailBo.insertMealDetails(mealDetail);
 		long id = insertedDetail.getId();
 
 		if (id > 0) {
-			response.setSucessmessage("Details are Added Successfully");
+			response.setSucessMessage("Details are Added Successfully");
 			response.setMealDetail(insertedDetail);
 		} else {
 			response.setFailuremessage("Failure to Add Details " + id);
@@ -61,11 +66,13 @@ public class MealDetailsService {
 
 	@Transactional
 	public ResponseHandle findByMealId(MealDetails mealDetail) throws MealIdNotFoundException {
+		
+		log.info("Find By method is Triggred....");
 
 		MealDetails fetchedDetail = mealDetailBo.findByMealId(mealDetail);
 
 		if (fetchedDetail != null) {
-			response.setSucessmessage("Details are Sucessfully fetched..");
+			response.setSucessMessage("Details are Sucessfully fetched..");
 			response.setMealDetail(fetchedDetail);
 		} else {
 			response.setFailuremessage("Details are not fetched Sucessfully");
@@ -77,11 +84,13 @@ public class MealDetailsService {
 	// 4. Fetch All
 
 	public ResponseHandle fetchAll() {
-
+		
+		log.info("Fetch All method is triggred...");
+		
 		List<MealDetails> mealDetail = mealDetailBo.fetchAll();
 		response.setMealDetailsList(mealDetail);
 		if (mealDetail.size() > 0) {
-			response.setSucessmessage("Sucessfully Details are Fetched !!!");
+			response.setSucessMessage("Sucessfully Details are Fetched !!!");
 		} else {
 			response.setFailuremessage("Failure to Fetch the Details !!!");
 		}
@@ -91,12 +100,13 @@ public class MealDetailsService {
 	// 5. Find MealDetail By UserId
 	@Transactional
 	public ResponseHandle findMealDetailsByUserId(long id) throws UserNotFound {
+		
+		log.info("Find MealDetail By User Id is triggred...");
 
 		List<MealDetails> list = mealDetailBo.findMealDetailsByUserId(id);
 		response.setMealDetailsList(list);
 		if (list.size() > 0) {
-			response.setSucessmessage("Details are Sucessfully fetched !!");
-			System.out.println(response.getMealDetailsList());
+			response.setSucessMessage("Details are Sucessfully fetched !!");
 		} else {
 			response.setFailuremessage("No Details Available ");
 		}
@@ -107,9 +117,11 @@ public class MealDetailsService {
 
 	public ResponseHandle avgCaloriesByDateRange(LocalDate startDate, LocalDate endDate) throws DateException {
 		
+		log.info("Avg Calories By Date Range is triggred...");
+		
 		double avgCalorie = mealDetailBo.avgCaloriesByDateRange(startDate, endDate);
-		if (avgCalorie > 0) {
-			response.setSucessmessage("Average Calories is Sucessfully Fetched !!!");
+		if (avgCalorie >= 0) {
+			response.setSucessMessage("Average Calories is Sucessfully Fetched !!!");
 			response.setCalories(avgCalorie);
 		} else {
 			response.setFailuremessage("Average Calories is not fetched Sucessfully !!!");
@@ -122,10 +134,12 @@ public class MealDetailsService {
 
 	public ResponseHandle findCustomMealDetails() {
 		
+		log.info("Custom Meal Detail Method is triggred...");
+		
 		List<MealDetailsProjection> mealDetail = mealDetailBo.findCustomMealDetails();
 		if (mealDetail.size() > 0) {
 			response.setMealDetailProjection(mealDetail);
-			response.setSucessmessage("Details are Sucessfully Fetched !!!");
+			response.setSucessMessage("Details are Sucessfully Fetched !!!");
 		} else {
 			response.setFailuremessage("Details are not Fetched Sucessfully !!!");
 		}
@@ -137,11 +151,16 @@ public class MealDetailsService {
 
 	public ResponseHandle findAvgCaloriesAndTotalQuantity(double calorie) throws QuantityException {
 		
-		List<MealSummary> mealSummary = mealDetailBo.findAvgCaloriesAndTotalQuantity(calorie);
-		if (mealSummary.size() > 0) {
+		log.info("Find Avg Calories And Total Quantity Method is triggred...");
+		
+		List<MealSummary> mealSummary=new ArrayList<>();
+		 mealSummary = mealDetailBo.findAvgCaloriesAndTotalQuantity(calorie);
+		if (!mealSummary.isEmpty()) {
 			response.setMealSummary(mealSummary);
-			response.setSucessmessage("Sucessfully mealSummary Fetched !!!");
-		} else {
+			response.setSucessMessage("Sucessfully mealSummary Fetched !!!");
+		}else if(mealSummary.isEmpty()) {
+			response.setSucessMessage("No Details Available");
+		}else {
 			response.setFailuremessage("Failed to fetch mealSummary !!!");
 		}
 		return response;
@@ -152,12 +171,14 @@ public class MealDetailsService {
 
 	@Transactional
 	public ResponseHandle updateMealDetail(MealDetails mealDetail) throws MealIdNotFoundException, FoodNameException {
+		
+		log.info("Update Method is triggred...");
 
 		MealDetails updateDetail = mealDetailBo.updateMealDetail(mealDetail);
 		long id = updateDetail.getId();
 
 		if (id > 0) {
-			response.setSucessmessage("Details are Updated Sucessfully");
+			response.setSucessMessage("Details are Updated Sucessfully");
 			response.setMealDetail(updateDetail);
 		} else {
 			response.setFailuremessage("Failure to Update Details " + id);
@@ -171,10 +192,12 @@ public class MealDetailsService {
 	// Delete Id
 
 	public ResponseHandle deleteId(MealDetails mealDetail) throws MealIdNotFoundException {
+		
+		log.info("Delete Method is triggred...");
 
 		boolean flag = mealDetailBo.deleteId(mealDetail);
 		if (flag != false) {
-			response.setSucessmessage(" Meal Detail is Successfully Deleted");
+			response.setSucessMessage(" Meal Detail is Successfully Deleted");
 			response.setId(mealDetail.getId());
 		} else {
 			response.setFailuremessage("Meal detail are Failure to Delete ");
@@ -186,11 +209,13 @@ public class MealDetailsService {
 
 	public ResponseHandle associationUserWithMealDetails(Users user) throws InValidCityId, FoodNameException,
 			InValidEmailException, DateException, QuantityException, MealTypeException {
+		
+		log.info("Association Meal Detail With User Method is triggred...");
 
 		Users insertedUser = mealDetailBo.associationUserWithMealDetails(user);
 		long id = insertedUser.getId();
 		if (id > 0) {
-			response.setSucessmessage("User Details are Addded Sucessfully !!!");
+			response.setSucessMessage("User Details are Addded Sucessfully !!!");
 			response.setId(id);
 		} else {
 			response.setFailuremessage("User Details are not Added Sucessfully !!!");
