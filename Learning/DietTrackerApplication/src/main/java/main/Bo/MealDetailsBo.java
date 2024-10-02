@@ -15,7 +15,6 @@ import main.DAO.MealSummary;
 import main.DAO.UserRepo;
 import main.entity.MealDetails;
 import main.entity.Users;
-
 import main.Exceptions.*;
 
 
@@ -40,7 +39,7 @@ public class MealDetailsBo {
 		validQuantity(mealDetail.getProtein()," Protein");
 		validQuantity(mealDetail.getQuantity()," Quantity");
 		validQuantity(mealDetail.getVitamins()," Vitamins");
-		validFoodName(mealDetail.getFoodName());
+		validName(mealDetail.getFoodName()," FoodName");
 		validMealType(mealDetail.getMealType());
 		
 	    return mealDetailRepo.save(mealDetail);
@@ -50,17 +49,23 @@ public class MealDetailsBo {
 
 	// Find BY Id
 
-	public MealDetails findByMealId(MealDetails mealDetail) {
+	public MealDetails findByMealId(MealDetails mealDetail) throws MealIdNotFoundException {
 		long id = mealDetail.getId();
+		validMealId(id);
 		MealDetails fetchedDetail = mealDetailRepo.findById(id).get();
 		return fetchedDetail;
 	}
 
+
 	// Update
 
 	
-	public MealDetails updateMealDetail(MealDetails mealDetail) {
+	public MealDetails updateMealDetail(MealDetails mealDetail) throws MealIdNotFoundException, FoodNameException {
 		long id=mealDetail.getId();
+		
+		validMealId(id);
+		validName(mealDetail.getFoodName(),"foodName");
+		
 		MealDetails updateDetail=mealDetailRepo.findById(id).get();
 		updateDetail.setFoodName(mealDetail.getFoodName());
 		updateDetail=mealDetailRepo.save(updateDetail);
@@ -68,34 +73,77 @@ public class MealDetailsBo {
 	}
 
 	//Delete
-	
-	public boolean deleteId(MealDetails mealDetail) {
+
+	public boolean deleteId(MealDetails mealDetail) throws MealIdNotFoundException {
 		
-		System.out.println("Bo "+mealDetail.getId());
+		validMealId(mealDetail.getId());
 		long id=mealDetail.getId();
 		mealDetailRepo.deleteById(id);
 		return true;
 		
 	}
+	
+	
+	
 
 	//Custom Querry Find By UserID :
 	
-	public List<MealDetails> findMealDetailsByUserId(long id) {
+	public List<MealDetails> findMealDetailsByUserId(long id) throws UserNotFound {
+		validUser(id);
 		List<MealDetails> list=mealDetailRepo.findMealDetailsByUserId(id);
 		return list;
 	}
-
 	//User Association
+   
 	
-	public Users associationUserWithMealDetails(Users user) {
-	Users insertedUser=userRepo.save(user);	
-	return insertedUser;
-	
+	public Users associationUserWithMealDetails(Users user) throws InValidCityId, FoodNameException, InValidEmailException, DateException, QuantityException, MealTypeException  {
+
+	    // Perform all validations before saving
+	    validUserCity(user.getCity());
+	    validName(user.getName(), "Name");
+	    vailEmail(user.getEmail());
+	    List<MealDetails> validDetails = user.getMealDetails();
+	    
+	    // Validate meal details
+	    validateList(validDetails);
+	    
+	    // After all validations have passed, save the user
+	    Users insertedUser = userRepo.save(user);
+	    return insertedUser;
 	}
 
 
-   //Fetch ALl
+	/*
+	  
+		public Users associationUserWithMealDetails(Users user) throws InValidCityId, FoodNameException, InValidEmailException, DateException, QuantityException, MealTypeException  {
+		
+	validUserCity(user.getCity());		
+	validName(user.getName()," Name");
+	vailEmail(user.getEmail());
+	List<MealDetails> validDetails=user.getMealDetails();
+	validateList(validDetails);
+	Users insertedUser=userRepo.save(user);	
+	List<MealDetails> mealDetail=user.getMealDetails();
+	return insertedUser;
 	
+	}
+	
+	 */
+
+
+
+//
+//	private void vaildName(String name, String string) {
+//		// TODO Auto-generated method stub
+//		
+//	}
+
+
+
+
+//Fetch ALl
+	
+
 	public List<MealDetails> fetchAll() {
 		List<MealDetails> mealDetails=mealDetailRepo.findAll();
 		return mealDetails;
@@ -150,9 +198,9 @@ public class MealDetailsBo {
 	}
 	
 
-	private void validFoodName(String foodName) throws FoodNameException {
-		if(foodName==null) {
-			throw new FoodNameException("ERROR : Invalid Food name");
+	private void validName(String name,String msg) throws FoodNameException {
+		if(name==null) {
+			throw new FoodNameException("ERROR : Invalid "+msg);
 		}
 	}
 
@@ -161,6 +209,72 @@ public class MealDetailsBo {
 			throw new MealTypeException("ERROR : Invalid Meal Type");
 		}
 	}
+	
+	private void validMealId(long id) throws MealIdNotFoundException {
+		 Optional<MealDetails> mealDetailOptional = mealDetailRepo.findById(id);
+		    
+		    if (!mealDetailOptional.isPresent()) {
+		    	 throw new MealIdNotFoundException("ERROR: MealId " + id + " does not exist in the database");
+		    }
+	}
+	
+	 private void validUserCity(int city) throws InValidCityId {
+			if(city>20) {
+				throw new InValidCityId("ERROR In valid City id");
+			}
+		}
 
 
+		private void validUser(long id) throws UserNotFound {
+			
+			Optional<Users> userOptional = userRepo.findById(id);
+		    if (!userOptional.isPresent()) {
+		        throw new UserNotFound("ERROR : User does not exist");
+		    }
+		    Users user = userOptional.get();				
+		}
+
+		private void vailEmail(String email) throws InValidEmailException {
+			if(!email.endsWith("@gmail.com")) {
+				throw new InValidEmailException("ERROR InValidEmail");
+			}
+		}
+
+/*		private void validateList(List<MealDetails> validDetails) throws DateException, QuantityException, FoodNameException, MealTypeException {
+			
+			for(int i=0;i<validDetails.size();i++) {
+				MealDetails mealDetail=validDetails.get(i);
+				
+				validDate(mealDetail.getMealDate());
+				validQuantity(mealDetail.getCalories()," Calories ");
+				validQuantity(mealDetail.getCarboHydrate()," CarboHydrates");
+				validQuantity(mealDetail.getProtein()," Protein");
+				validQuantity(mealDetail.getQuantity()," Quantity");
+				validQuantity(mealDetail.getVitamins()," Vitamins");
+				validName(mealDetail.getFoodName()," FoodName");
+				validMealType(mealDetail.getMealType());
+				
+			}
+			
+		}
+
+*/
+		
+		private void validateList(List<MealDetails> validDetails) throws DateException, QuantityException, FoodNameException, MealTypeException {
+
+		    for (int i = 0; i < validDetails.size(); i++) {
+		        MealDetails mealDetail = validDetails.get(i);
+
+		        // Validate each field
+		        validDate(mealDetail.getMealDate());
+		        validQuantity(mealDetail.getCalories(), "Calories");
+		        validQuantity(mealDetail.getCarboHydrate(), "CarboHydrates");
+		        validQuantity(mealDetail.getProtein(), "Protein");
+		        validQuantity(mealDetail.getQuantity(), "Quantity");
+		        validQuantity(mealDetail.getVitamins(), "Vitamins");
+		        validName(mealDetail.getFoodName(), "FoodName");
+		        validMealType(mealDetail.getMealType());
+		    }
+
+		}
 }

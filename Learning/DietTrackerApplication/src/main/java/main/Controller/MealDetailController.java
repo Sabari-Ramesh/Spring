@@ -40,35 +40,7 @@ public class MealDetailController {
 	  
 	  
 	  // Insert Meal Detail
-/*	  @PostMapping("/add")
-	  public MealDetailsDTO insertMealDetail(@RequestBody MealDetailsDTO mealDetailDto) {
-
-	      // Convert DTO to Entity
-	      MealDetails mealDetail = new MealDetails();
-	      mealDetail.setMealType(mealDetailDto.getMealType());
-	      mealDetail.setMealDate(mealDetailDto.getMealDate());
-	      mealDetail.setQuantity(mealDetailDto.getQuantity());
-	      mealDetail.setCalories(mealDetailDto.getCalories());
-	      mealDetail.setProtein(mealDetailDto.getProtein());
-	      mealDetail.setCarboHydrate(mealDetailDto.getCarboHydrate());
-	      mealDetail.setVitamins(mealDetailDto.getVitamins());
-	      mealDetail.setFoodName(mealDetailDto.getFoodName());
-	      mealDetail.setUser(mealDetailDto.getUser());
-
-	      ResponseHandle response = mealDetailsService.insertMealDetail(mealDetail);
-	      MealDetails inserted = response.getMealDetail();
-	      
-	      //Set update and id details
-	      
-	      mealDetailDto.setDateCreated(inserted.getDateCreated());
-	      mealDetailDto.setLastUpdate(inserted.getLastUpdate());
-	      mealDetailDto.setId(inserted.getId());
-	      return mealDetailDto;
-	      
-	  } */
 	  
-	  
-
 	    @PostMapping("/add")
 	    public ResponseEntity<?> insertMealDetail(@RequestBody MealDetailsDTO mealDetailDto) {
 	        
@@ -112,64 +84,84 @@ public class MealDetailController {
 	    //Find By meal Id
 	    
 	  @GetMapping("/mealid=/{id}")
-	  public MealDetailsDTO findByMealId(@PathVariable("id") long id) {
+	  public ResponseEntity<?> findByMealId(@PathVariable("id") long id) {
 	      MealDetailsDTO mealDetailDto = new MealDetailsDTO();
-	      
 	      MealDetails mealDetail=new MealDetails();
 	      mealDetail.setId(id);
+	      try {
 	      
 	      ResponseHandle response = mealDetailsService.findByMealId(mealDetail);
-	      MealDetails fetchedDetail = response.getMealDetail();	      
-	      return mapToDto(fetchedDetail);
+	      MealDetails fetchedDetail = response.getMealDetail();
+	      return ResponseEntity.ok(mapToDto(fetchedDetail));
+	      }
+	      catch(MealIdNotFoundException e) {
+	    	  return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+	      }
 	  }
 
 	    
 	 // Update Meal Detail
 	    @PutMapping("/update")
-	    public MealDetailsDTO updateMealDetail(@RequestBody MealDetailsDTO mealDetailDto) {
+	    public ResponseEntity<?> updateMealDetail(@RequestBody MealDetailsDTO mealDetailDto) {
 	    	
 			MealDetails mealDetail = new MealDetails();
 			mealDetail.setId(mealDetailDto.getId());
 			mealDetail.setFoodName(mealDetailDto.getFoodName());
+			try {
 	        ResponseHandle response = mealDetailsService.updateMealDetail(mealDetail);        
 	        MealDetails fetchedDetail = response.getMealDetail();
+	        return ResponseEntity.ok(mapToDto(fetchedDetail));
+			}catch(MealIdNotFoundException e) {
+				 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+			}catch(FoodNameException e) {
+				 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+			}
 		        
-		    return mapToDto(fetchedDetail);
 		      
 	    }
 	    
 	    // Delete Meal Detail 
 	    @DeleteMapping("/deletemealid=/{id}")
-	    public ResponseHandle deleteMealDetail(@PathVariable("id") long id) {
+	    public ResponseEntity<?> deleteMealDetail(@PathVariable("id") long id) {
 	    	
 	    	MealDetails mealDetail=new MealDetails();
 			mealDetail.setId(id);	    	
 
-	        ResponseHandle response = mealDetailsService.deleteId(mealDetail);
-	        return response;
+			try {
+				ResponseHandle response = mealDetailsService.deleteId(mealDetail);
+		        return ResponseEntity.ok(response.getId()+" Sucessfully Deleted");
+			}catch(MealIdNotFoundException e) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+			}
+	        
 	    }
 
+	    
 	    // Find Meal Details By User ID 
 	    @GetMapping("/userid=/{userId}")  //Loop Error
-	    public  List<MealDetailsDTO> findMealDetailsByUserId(@PathVariable("userId") long userId) {
+	    public  ResponseEntity<?> findMealDetailsByUserId(@PathVariable("userId") long userId) {
 	    	
+	    	try {
+	    		
 	        ResponseHandle response = mealDetailsService.findMealDetailsByUserId(userId);
 	        List<MealDetails> list=response.getMealDetailsList();
-	        List<MealDetailsDTO> listDTO=new ArrayList<>();
-	        
+	        List<MealDetailsDTO> listDTO=new ArrayList<>();        
 	        for(int i=0;i<list.size();i++) {	
 	        	MealDetails mealDetail=list.get(i);
 	        	MealDetailsDTO getDetail=mapToDto(mealDetail);
 	        	listDTO.add(getDetail);
-	        }
+	        }  
+	        return ResponseEntity.ok(listDTO);
 	        
-	        return listDTO;
+	    	}catch(UserNotFound e) {
+	    		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+	    	}
 	    }
 	    
 	    
 	    //Association User with MealDetails
 	    @PostMapping("/associate-meal-details")
-	    public ResponseHandle associateUserWithMealDetails(@RequestBody UsersDTO userDto) {
+	    public ResponseEntity<?> associateUserWithMealDetails(@RequestBody UsersDTO userDto)  {
 	    	
 	    	Users user = new Users();
 	        user.setName(userDto.getName());
@@ -177,6 +169,7 @@ public class MealDetailController {
 	        user.setPassword(userDto.getPassword());
 	        user.setDateOfBirth(userDto.getDateOfBirth());
 	        user.setMobileNumber(userDto.getMobileNumber());
+	        user.setGender(userDto.getGender());
 	        user.setCity(userDto.getCity());
 
 	        List<MealDetails> mealDetailsList = new ArrayList<>();
@@ -195,10 +188,25 @@ public class MealDetailController {
 	        }
 
 	        user.setMealDetails(mealDetailsList);
-	    	
-	        ResponseHandle response = mealDetailsService.associationUserWithMealDetails(user);
+	    	try {
+	    		ResponseHandle response = mealDetailsService.associationUserWithMealDetails(user);		        
+		        return ResponseEntity.ok(response);
+	    	}catch(InValidCityId e) {
+	    		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+	    	}catch(FoodNameException e) {
+	    		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+	    	}catch(InValidEmailException e) {
+	    		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+	    	}catch(DataIntegrityViolationException e) {
+	    		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate Entry ");  
+	    	}catch(DateException e) {
+	    		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+	    	}catch(QuantityException e) {
+	    		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+	    	}catch(MealTypeException e) {
+	    		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+	    	}
 	        
-	        return response;
 	    }
 	    
 	    

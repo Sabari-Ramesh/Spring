@@ -14,6 +14,9 @@ import main.DAO.MealSummary;
 import main.DTO.UsersDTO;
 import main.Exceptions.DateException;
 import main.Exceptions.FoodNameException;
+import main.Exceptions.InValidCityId;
+import main.Exceptions.InValidEmailException;
+import main.Exceptions.MealIdNotFoundException;
 import main.Exceptions.MealTypeException;
 import main.Exceptions.QuantityException;
 import main.Exceptions.UserNotFound;
@@ -77,7 +80,7 @@ public class MealDetailsService {
 	// FindById
 
 	@Transactional
-	public ResponseHandle findByMealId(MealDetails mealDetail) {
+	public ResponseHandle findByMealId(MealDetails mealDetail) throws MealIdNotFoundException {
 
 		MealDetails fetchedDetail = mealDetailBo.findByMealId(mealDetail);
 
@@ -94,7 +97,7 @@ public class MealDetailsService {
 	// Update Detail
 
 	@Transactional
-	public ResponseHandle updateMealDetail(MealDetails mealDetail) {
+	public ResponseHandle updateMealDetail(MealDetails mealDetail) throws MealIdNotFoundException, FoodNameException {
 		
 		MealDetails updateDetail = mealDetailBo.updateMealDetail(mealDetail);
 		long id = updateDetail.getId();
@@ -112,8 +115,8 @@ public class MealDetailsService {
 	}
 	
 	//Delete Id
-	@Transactional
-	public ResponseHandle deleteId(MealDetails mealDetail) {
+	
+	public ResponseHandle deleteId(MealDetails mealDetail) throws MealIdNotFoundException {
 		
 		
 		boolean flag=mealDetailBo.deleteId(mealDetail);
@@ -128,22 +131,23 @@ public class MealDetailsService {
 
 	//Find MealDetail By UserId
 	@Transactional
-	public ResponseHandle findMealDetailsByUserId(long id) {
+	public ResponseHandle findMealDetailsByUserId(long id) throws UserNotFound {
 		
+
 		List<MealDetails> list=mealDetailBo.findMealDetailsByUserId(id);
 		response.setMealDetailsList(list);
 		if(list.size()>0) {
 			response.setSucessmessage("Details are Sucessfully fetched !!");
 			System.out.println(response.getMealDetailsList());
 		}else {
-			response.setFailuremessage("Details are not Sucessfully fetched !!!");
+			response.setFailuremessage("No Details Available ");
 		}
 		return response;
 	}
 
 	   // Associate meal details with user
 	
-	public ResponseHandle associationUserWithMealDetails(Users user) {
+	public ResponseHandle associationUserWithMealDetails(Users user) throws InValidCityId, FoodNameException, InValidEmailException, DateException, QuantityException, MealTypeException {
 		
             Users insertedUser= mealDetailBo.associationUserWithMealDetails(user);
 	        long id=insertedUser.getId();	        
