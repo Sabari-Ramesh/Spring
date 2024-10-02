@@ -35,49 +35,29 @@ public class MealDetailsService {
 
 	@Autowired
 	private ResponseHandle response;
-	
 
-	// Insert
-/*	@Transactional
-	public ResponseHandle insertMealDetail(MealDetails mealDetail) {
+	// 2. Insert
+
+	@Transactional
+	public ResponseHandle insertMealDetail(MealDetails mealDetail) throws UserNotFound, DataIntegrityViolationException,
+			DateException, QuantityException, FoodNameException, MealTypeException {
 
 		MealDetails insertedDetail = mealDetailBo.insertMealDetails(mealDetail);
 		long id = insertedDetail.getId();
 
 		if (id > 0) {
-			response.setSucessmessage("Details are Added Sucessfully");
+			response.setSucessmessage("Details are Added Successfully");
 			response.setMealDetail(insertedDetail);
 		} else {
 			response.setFailuremessage("Failure to Add Details " + id);
 		}
 
 		response.setId(id);
-
 		return response;
-	} */
-	
-	
-	@Transactional
-	public ResponseHandle insertMealDetail(MealDetails mealDetail) throws UserNotFound,DataIntegrityViolationException, DateException, QuantityException, FoodNameException, MealTypeException {
 
-
-	        MealDetails insertedDetail = mealDetailBo.insertMealDetails(mealDetail);
-	        long id = insertedDetail.getId();
-
-	        if (id > 0) {
-	            response.setSucessmessage("Details are Added Successfully");
-	            response.setMealDetail(insertedDetail);
-	        } else {
-	            response.setFailuremessage("Failure to Add Details " + id);
-	        }
-
-	        response.setId(id);
-	        return response;
-
-	   
 	}
 
-	// FindById
+	// 3. FindById
 
 	@Transactional
 	public ResponseHandle findByMealId(MealDetails mealDetail) throws MealIdNotFoundException {
@@ -94,11 +74,85 @@ public class MealDetailsService {
 		return response;
 	}
 
+	// 4. Fetch All
+
+	public ResponseHandle fetchAll() {
+
+		List<MealDetails> mealDetail = mealDetailBo.fetchAll();
+		response.setMealDetailsList(mealDetail);
+		if (mealDetail.size() > 0) {
+			response.setSucessmessage("Sucessfully Details are Fetched !!!");
+		} else {
+			response.setFailuremessage("Failure to Fetch the Details !!!");
+		}
+		return response;
+	}
+
+	// 5. Find MealDetail By UserId
+	@Transactional
+	public ResponseHandle findMealDetailsByUserId(long id) throws UserNotFound {
+
+		List<MealDetails> list = mealDetailBo.findMealDetailsByUserId(id);
+		response.setMealDetailsList(list);
+		if (list.size() > 0) {
+			response.setSucessmessage("Details are Sucessfully fetched !!");
+			System.out.println(response.getMealDetailsList());
+		} else {
+			response.setFailuremessage("No Details Available ");
+		}
+		return response;
+	}
+
+	// 6.and 8. Named Querry With Aggregate
+
+	public ResponseHandle avgCaloriesByDateRange(LocalDate startDate, LocalDate endDate) throws DateException {
+		
+		double avgCalorie = mealDetailBo.avgCaloriesByDateRange(startDate, endDate);
+		if (avgCalorie > 0) {
+			response.setSucessmessage("Average Calories is Sucessfully Fetched !!!");
+			response.setCalories(avgCalorie);
+		} else {
+			response.setFailuremessage("Average Calories is not fetched Sucessfully !!!");
+		}
+		return response;
+		
+	}
+
+	// 7 Custom Querry with Projection
+
+	public ResponseHandle findCustomMealDetails() {
+		
+		List<MealDetailsProjection> mealDetail = mealDetailBo.findCustomMealDetails();
+		if (mealDetail.size() > 0) {
+			response.setMealDetailProjection(mealDetail);
+			response.setSucessmessage("Details are Sucessfully Fetched !!!");
+		} else {
+			response.setFailuremessage("Details are not Fetched Sucessfully !!!");
+		}
+		return response;
+		
+	}
+
+	// 9. Named Querry with Clauses
+
+	public ResponseHandle findAvgCaloriesAndTotalQuantity(double calorie) throws QuantityException {
+		
+		List<MealSummary> mealSummary = mealDetailBo.findAvgCaloriesAndTotalQuantity(calorie);
+		if (mealSummary.size() > 0) {
+			response.setMealSummary(mealSummary);
+			response.setSucessmessage("Sucessfully mealSummary Fetched !!!");
+		} else {
+			response.setFailuremessage("Failed to fetch mealSummary !!!");
+		}
+		return response;
+		
+	}
+
 	// Update Detail
 
 	@Transactional
 	public ResponseHandle updateMealDetail(MealDetails mealDetail) throws MealIdNotFoundException, FoodNameException {
-		
+
 		MealDetails updateDetail = mealDetailBo.updateMealDetail(mealDetail);
 		long id = updateDetail.getId();
 
@@ -108,116 +162,41 @@ public class MealDetailsService {
 		} else {
 			response.setFailuremessage("Failure to Update Details " + id);
 		}
-		
+
 		response.setId(id);
 
 		return response;
 	}
-	
-	//Delete Id
-	
+
+	// Delete Id
+
 	public ResponseHandle deleteId(MealDetails mealDetail) throws MealIdNotFoundException {
-		
-		
-		boolean flag=mealDetailBo.deleteId(mealDetail);
-		if(flag!=false) {
+
+		boolean flag = mealDetailBo.deleteId(mealDetail);
+		if (flag != false) {
 			response.setSucessmessage(" Meal Detail is Successfully Deleted");
 			response.setId(mealDetail.getId());
-		}else {
+		} else {
 			response.setFailuremessage("Meal detail are Failure to Delete ");
 		}
 		return response;
 	}
 
-	//Find MealDetail By UserId
-	@Transactional
-	public ResponseHandle findMealDetailsByUserId(long id) throws UserNotFound {
-		
+	// Associate meal details with user
 
-		List<MealDetails> list=mealDetailBo.findMealDetailsByUserId(id);
-		response.setMealDetailsList(list);
-		if(list.size()>0) {
-			response.setSucessmessage("Details are Sucessfully fetched !!");
-			System.out.println(response.getMealDetailsList());
-		}else {
-			response.setFailuremessage("No Details Available ");
+	public ResponseHandle associationUserWithMealDetails(Users user) throws InValidCityId, FoodNameException,
+			InValidEmailException, DateException, QuantityException, MealTypeException {
+
+		Users insertedUser = mealDetailBo.associationUserWithMealDetails(user);
+		long id = insertedUser.getId();
+		if (id > 0) {
+			response.setSucessmessage("User Details are Addded Sucessfully !!!");
+			response.setId(id);
+		} else {
+			response.setFailuremessage("User Details are not Added Sucessfully !!!");
 		}
+
 		return response;
 	}
-
-	   // Associate meal details with user
-	
-	public ResponseHandle associationUserWithMealDetails(Users user) throws InValidCityId, FoodNameException, InValidEmailException, DateException, QuantityException, MealTypeException {
-		
-            Users insertedUser= mealDetailBo.associationUserWithMealDetails(user);
-	        long id=insertedUser.getId();	        
-	        if(id>0) {
-	        response.setSucessmessage("User Details are Addded Sucessfully !!!");
-	        response.setId(id);
-	        }else {
-	        	response.setFailuremessage("User Details are not Added Sucessfully !!!");
-	        }
-		
-		
-		return response;
-	}
-
-	//Fetch All
-	
-	public ResponseHandle fetchAll() {
-		
-		List<MealDetails> mealDetail=mealDetailBo.fetchAll();
-		response.setMealDetailsList(mealDetail);
-		if(mealDetail.size()>0) {
-			response.setSucessmessage("Sucessfully Details are Fetched !!!");
-		}else {
-			response.setFailuremessage("Failure to Fetch the Details !!!");
-		}
-		return response;
-	}
-
-	//find Custom MealDetails
-	
-	public ResponseHandle findCustomMealDetails() {
-	List<MealDetailsProjection> mealDetail=mealDetailBo.findCustomMealDetails();
-    if(mealDetail.size()>0) {
-    	response.setMealDetailProjection(mealDetail);
-    	response.setSucessmessage("Details are Sucessfully Fetched !!!");
-    }else {
-    	response.setFailuremessage("Details are not Fetched Sucessfully !!!");
-    }
-		return response;
-	}
-
-	//Named Queery With Aggregate
-	
-	public ResponseHandle avgCaloriesByDateRange(LocalDate startDate, LocalDate endDate) {
-		double avgCalorie=mealDetailBo.avgCaloriesByDateRange(startDate,endDate);
-		if(avgCalorie>0) {
-			response.setSucessmessage("Average Calories is Sucessfully Fetched !!!");
-			response.setCalories(avgCalorie);
-		}else {
-			response.setFailuremessage("Average Calories is not fetched Sucessfully !!!");
-		}
-		return response;
-	}
-
-	//Named Querry with Clauses
-	
-	public ResponseHandle findAvgCaloriesAndTotalQuantity(double calorie) {
-       List<MealSummary> mealSummary=mealDetailBo.findAvgCaloriesAndTotalQuantity(calorie);
-       if(mealSummary.size()>0) {
-    	   response.setMealSummary(mealSummary);
-    	   response.setSucessmessage("Sucessfully mealSummary Fetched !!!");
-       }else {
-    	   response.setFailuremessage("Failed to fetch mealSummary !!!");
-       }
-       return response;
-	}
-
-
-
 
 }
-
-

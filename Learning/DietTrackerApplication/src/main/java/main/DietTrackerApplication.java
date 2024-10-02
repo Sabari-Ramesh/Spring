@@ -114,7 +114,7 @@ public class DietTrackerApplication {
 
 	}
 
-	//2. INSERT
+	// 2. INSERT
 
 	private void insert() {
 
@@ -179,7 +179,7 @@ public class DietTrackerApplication {
 
 	}
 
-	//3. Find By Meal Id
+	// 3. Find By Meal Id
 
 	private void findByMealId() {
 
@@ -202,7 +202,7 @@ public class DietTrackerApplication {
 
 	}
 
-	//4. Fetch All
+	// 4. Fetch All
 
 	private void fetchAll() {
 
@@ -217,26 +217,88 @@ public class DietTrackerApplication {
 		}
 
 	}
-	
-	//5. Custom Querry
 
-		private void findMealDetailsByUserId() {
-			
-			System.out.println("Enter the User id :");
-			long id = sc.nextLong();
-			try {
+	// 5. Custom Querry
+
+	private void findMealDetailsByUserId() {
+
+		System.out.println("Enter the User id :");
+		long id = sc.nextLong();
+		try {
 			response = mealDetailService.findMealDetailsByUserId(id);
 			if (response.getSucessmessage() != null) {
 				System.out.println(response.getSucessmessage() + " for User Id " + id);
-			}else {
+			} else {
 				System.out.println(response.getFailuremessage());
 			}
-			}catch(UserNotFound e) {
-				System.err.println(e.getMessage());
-			}
-			
+		} catch (UserNotFound e) {
+			System.err.println(e.getMessage());
 		}
-	
+
+	}
+
+	// 6. && 8. Named Querry With Aggregate
+
+	private void avgCaloriesByDateRange() {
+		
+		System.out.println("Enter the Start Date :");
+		String date = sc.next();
+		DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		LocalDate startDate = LocalDate.parse(date, format);
+
+		System.out.println("Enter the End date :");
+		date = sc.next();
+		LocalDate endDate = LocalDate.parse(date, format);
+
+		try {
+		response = mealDetailService.avgCaloriesByDateRange(startDate, endDate);
+		double avgCalorie = response.getCalories();
+			System.out.println("Average Calories :" + avgCalorie);
+			System.out.println(response.getSucessmessage());
+		}catch(DateException e) {
+			System.err.println(e.getMessage());
+		}
+		
+	}
+
+	// 7. Custom Querry with Projection
+
+	private void findCustomMealDetails() {
+		response = mealDetailService.findCustomMealDetails();
+		List<MealDetailsProjection> mealDetail = response.getMealDetailProjection();
+		if (mealDetail.size() > 0) {
+			System.out.println(response.getSucessmessage());
+			System.out.println(response.getMealDetailProjection());
+		} else {
+			response.getFailuremessage();
+		}
+	}
+
+	// 9. Named with Clauses
+
+	private void findAvgCaloriesAndTotalQuantity() {
+
+		System.out.println("Enter the Calories :");
+		double calorie = sc.nextDouble();
+
+		try {
+
+			response = mealDetailService.findAvgCaloriesAndTotalQuantity(calorie);
+			List<MealSummary> mealSummary = response.getMealSummary();
+			if (mealSummary.size() > 0) {
+				System.out.println(response.getSucessmessage());
+				for (int i = 0; i < mealSummary.size(); i++) {
+					MealSummary summary = mealSummary.get(i);
+					System.out.print(summary.getAvgCalories() + " " + summary.getTotalQuantity());
+				}
+			} else {
+				System.out.println(response.getFailuremessage());
+			}
+		} catch (QuantityException e) {
+			System.err.println(e.getMessage());
+		}
+	}
+
 	// Update
 
 	private void update() {
@@ -284,10 +346,8 @@ public class DietTrackerApplication {
 
 	}
 
-	
-
 	// Association User with mealDetail
-	private void associationUserWithMealDetails()  {
+	private void associationUserWithMealDetails() {
 
 		Users user = new Users();
 
@@ -366,81 +426,24 @@ public class DietTrackerApplication {
 		long id;
 
 		try {
-		response = mealDetailService.associationUserWithMealDetails(user);
-		id = response.getId();
-		System.out.println(response.getSucessmessage() + " " + id);
+			response = mealDetailService.associationUserWithMealDetails(user);
+			id = response.getId();
+			System.out.println(response.getSucessmessage() + " " + id);
 
-		}catch(InValidCityId e) {
+		} catch (InValidCityId e) {
 			System.err.println(e.getMessage());
-		}catch(FoodNameException e) {
+		} catch (FoodNameException e) {
 			System.err.println(e.getMessage());
-		}catch(InValidEmailException e) {
+		} catch (InValidEmailException e) {
 			System.err.println(e.getMessage());
-		}catch(MealTypeException e) { 
+		} catch (MealTypeException e) {
 			System.err.println(e.getMessage());
-		}catch(DateException e) {
+		} catch (DateException e) {
 			System.err.println(e.getMessage());
-		}catch(QuantityException e) {
+		} catch (QuantityException e) {
 			System.err.println(e.getMessage());
 		}
-		
-		
-		}
 
-
-
-	// find Custom MealDetails
-
-	private void findCustomMealDetails() {
-		response = mealDetailService.findCustomMealDetails();
-		List<MealDetailsProjection> mealDetail = response.getMealDetailProjection();
-		if (mealDetail.size() > 0) {
-			System.out.println(response.getSucessmessage());
-			System.out.println(response.getMealDetailProjection());
-		} else {
-			response.getFailuremessage();
-		}
-	}
-
-	// Named Querry With Aggregate
-
-	private void avgCaloriesByDateRange() {
-		System.out.println("Enter the Start Date :");
-		String date = sc.next();
-		DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		LocalDate startDate = LocalDate.parse(date, format);
-
-		System.out.println("Enter the End date :");
-		date = sc.next();
-		LocalDate endDate = LocalDate.parse(date, format);
-
-		response = mealDetailService.avgCaloriesByDateRange(startDate, endDate);
-
-		double avgCalorie = response.getCalories();
-		if (avgCalorie > 0) {
-			System.out.println("Average Calories :" + avgCalorie);
-			System.out.println(response.getSucessmessage());
-		} else {
-			System.out.println(response.getFailuremessage());
-		}
-	}
-
-	// Named with Clauses
-
-	private void findAvgCaloriesAndTotalQuantity() {
-		System.out.println("Enter the Calories :");
-		double calorie = sc.nextDouble();
-		response = mealDetailService.findAvgCaloriesAndTotalQuantity(calorie);
-		List<MealSummary> mealSummary = response.getMealSummary();
-		if (mealSummary.size() > 0) {
-			System.out.println(response.getSucessmessage());
-			for (int i = 0; i < mealSummary.size(); i++) {
-				MealSummary summary = mealSummary.get(i);
-				System.out.print(summary.getAvgCalories() + " " + summary.getTotalQuantity());
-			}
-		} else {
-			System.out.println(response.getFailuremessage());
-		}
 	}
 
 }
