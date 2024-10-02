@@ -45,7 +45,7 @@ public class Users {
     private int city;
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-   // @JsonIgnore
+    @JsonIgnore
     private List<MealDetails> mealDetails= new ArrayList<>();
     
     @CreationTimestamp
@@ -146,12 +146,12 @@ public class Users {
   
     //To String
     
-//	@Override
-//	public String toString() {
-//		return "Users [id=" + id + ", name=" + name + ", email=" + email + ", password=" + password + ", gender="
-//				+ gender + ", dateOfBirth=" + dateOfBirth + ", mobileNumber=" + mobileNumber + ", city=" + city
-//				+ ", mealDetails=" + mealDetails + ", dateCreated=" + dateCreated + ", lastUpdate=" + lastUpdate + "]";
-//	}
+	@Override
+	public String toString() {
+		return "Users [id=" + id + ", name=" + name + ", email=" + email + ", password=" + password + ", gender="
+				+ gender + ", dateOfBirth=" + dateOfBirth + ", mobileNumber=" + mobileNumber + ", city=" + city
+				+ ", dateCreated=" + dateCreated + ", lastUpdate=" + lastUpdate + "]";
+	}
 
     
 }

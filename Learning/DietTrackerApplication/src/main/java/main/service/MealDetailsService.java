@@ -1,14 +1,15 @@
 package main.service;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import main.Bo.MealDetailsBo;
-import main.DAO.UserRepo;
-import main.DTO.MealDetailsDTO;
+import main.DAO.MealDetailsProjection;
+import main.DAO.MealSummary;
 import main.DTO.UsersDTO;
 import main.Response.ResponseHandle;
 import main.entity.MealDetails;
@@ -30,11 +31,11 @@ public class MealDetailsService {
 	// Insert
 	public ResponseHandle insertMealDetail(MealDetails mealDetail) {
 		
-		System.out.println("Serive "+mealDetail);
+		//System.out.println("Serive "+mealDetail);
 		MealDetails insertedDetail = mealDetailBo.insertMealDetails(mealDetail);
         
 		
-		System.out.println(mealDetail+"Service ");
+		//System.out.println(mealDetail+"Service ");
 		long id = insertedDetail.getId();
 
 		if (id > 0) {
@@ -121,10 +122,7 @@ public class MealDetailsService {
 	public ResponseHandle associationUserWithMealDetails(Users user) {
 		
             Users insertedUser= mealDetailBo.associationUserWithMealDetails(user);
-	        long id=insertedUser.getId();
-	        System.out.println(user);
-	        System.out.println(user.getMealDetails());
-	        
+	        long id=insertedUser.getId();	        
 	        if(id>0) {
 	        response.setSucessmessage("User Details are Addded Sucessfully !!!");
 	        response.setId(id);
@@ -135,6 +133,61 @@ public class MealDetailsService {
 		
 		return response;
 	}
+
+	//Fetch All
+	
+	public ResponseHandle fetchAll() {
+		
+		List<MealDetails> mealDetail=mealDetailBo.fetchAll();
+		response.setMealDetailsList(mealDetail);
+		if(mealDetail.size()>0) {
+			response.setSucessmessage("Sucessfully Details are Fetched !!!");
+		}else {
+			response.setFailuremessage("Failure to Fetch the Details !!!");
+		}
+		return response;
+	}
+
+	//find Custom MealDetails
+	
+	public ResponseHandle findCustomMealDetails() {
+	List<MealDetailsProjection> mealDetail=mealDetailBo.findCustomMealDetails();
+    if(mealDetail.size()>0) {
+    	response.setMealDetailProjection(mealDetail);
+    	response.setSucessmessage("Details are Sucessfully Fetched !!!");
+    }else {
+    	response.setFailuremessage("Details are not Fetched Sucessfully !!!");
+    }
+		return response;
+	}
+
+	//Named Queery With Aggregate
+	
+	public ResponseHandle avgCaloriesByDateRange(LocalDate startDate, LocalDate endDate) {
+		double avgCalorie=mealDetailBo.avgCaloriesByDateRange(startDate,endDate);
+		if(avgCalorie>0) {
+			response.setSucessmessage("Average Calories is Sucessfully Fetched !!!");
+			response.setCalories(avgCalorie);
+		}else {
+			response.setFailuremessage("Average Calories is not fetched Sucessfully !!!");
+		}
+		return response;
+	}
+
+	//Named Querry with Clauses
+	
+	public ResponseHandle findAvgCaloriesAndTotalQuantity(double calorie) {
+       List<MealSummary> mealSummary=mealDetailBo.findAvgCaloriesAndTotalQuantity(calorie);
+       if(mealSummary.size()>0) {
+    	   response.setMealSummary(mealSummary);
+    	   response.setSucessmessage("Sucessfully mealSummary Fetched !!!");
+       }else {
+    	   response.setFailuremessage("Failed to fetch mealSummary !!!");
+       }
+       return response;
+	}
+
+
 
 
 }

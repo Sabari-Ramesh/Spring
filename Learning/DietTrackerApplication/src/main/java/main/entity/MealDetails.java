@@ -7,17 +7,31 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+
+
 
 @Entity
+@NamedQueries({
+    @NamedQuery(
+        name = "MealDetails.avgCaloriesByDateRange",
+        query = "SELECT AVG(m.calories) FROM MealDetails m WHERE m.mealDate BETWEEN :startDate AND :endDate"
+    ),
+    @NamedQuery(
+            name = "MealDetails.avgCaloriesAndTotalQuantity",
+            query = "SELECT SUM(m.quantity) AS totalQuantity, AVG(m.calories) AS avgCalories " +
+                    "FROM MealDetails m GROUP BY m.user HAVING AVG(m.calories) > :calorieThreshold " +
+                    "ORDER BY AVG(m.calories) DESC"
+        )
+})
 public class MealDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -149,12 +163,11 @@ public class MealDetails {
 	}
 
 //	@Override
-//	public String toString() {
-//		return "MealDetails [id=" + id + ", mealType=" + mealType + ", mealDate=" + mealDate + ", user=" + user
-//				+ ", foodName=" + foodName + ", quantity=" + quantity + ", calories=" + calories + ", protein="
-//				+ protein + ", carboHydrate=" + carboHydrate + ", vitamins=" + vitamins + ", dateCreated=" + dateCreated
-//				+ ", lastUpdate=" + lastUpdate + "]";
-//	}
+	public String toString() {
+		return "MealDetails [id=" + id + ", mealType=" + mealType + ", mealDate=" + mealDate + ", foodName=" + foodName + ", quantity=" + quantity + ", calories=" + calories + ", protein="
+				+ protein + ", carboHydrate=" + carboHydrate + ", vitamins=" + vitamins + ", dateCreated=" + dateCreated
+				+ ", lastUpdate=" + lastUpdate + "]";
+	}
 
 
 

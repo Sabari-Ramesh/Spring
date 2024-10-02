@@ -1,7 +1,9 @@
 package main.Controller;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,8 +13,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import main.DAO.MealDetailsProjection;
+import main.DAO.MealSummary;
 import main.DTO.MealDetailsDTO;
 import main.DTO.UsersDTO;
 import main.Response.ResponseHandle;
@@ -78,27 +83,10 @@ public class MealDetailController {
 			MealDetails mealDetail = new MealDetails();
 			mealDetail.setId(mealDetailDto.getId());
 			mealDetail.setFoodName(mealDetailDto.getFoodName());
-	        ResponseHandle response = mealDetailsService.updateMealDetail(mealDetail);
-	        
+	        ResponseHandle response = mealDetailsService.updateMealDetail(mealDetail);        
 	        MealDetails fetchedDetail = response.getMealDetail();
-		     
-		      
-		      // Convert entity into DTO
-		      
-		   /*   mealDetailDto.setId(fetchedDetail.getId());
-		      mealDetailDto.setCalories(fetchedDetail.getCalories());
-		      mealDetailDto.setCarboHydrate(fetchedDetail.getCarboHydrate());
-		      mealDetailDto.setDateCreated(fetchedDetail.getDateCreated());
-		      mealDetailDto.setFoodName(fetchedDetail.getFoodName());
-		      mealDetailDto.setLastUpdate(fetchedDetail.getLastUpdate());
-		      mealDetailDto.setMealDate(fetchedDetail.getMealDate());
-		      mealDetailDto.setMealType(fetchedDetail.getMealType());
-		      mealDetailDto.setProtein(fetchedDetail.getProtein());
-		      mealDetailDto.setQuantity(fetchedDetail.getQuantity());
-		    //  mealDetailDto.setUser(fetchedDetail.getUser());
-		      mealDetailDto.setVitamins(fetchedDetail.getVitamins()); */
-		      
-		      return mapToDto(fetchedDetail);
+		        
+		    return mapToDto(fetchedDetail);
 		      
 	    }
 	    
@@ -166,8 +154,53 @@ public class MealDetailController {
 	    }
 	    
 	    
+	    //FindALL
 	    
+	    @GetMapping("/findall")
+	    public List<MealDetailsDTO> findAll() {
+	    	
+	        ResponseHandle response = mealDetailsService.fetchAll();
+	        List<MealDetails> mealDetailList = response.getMealDetailsList();  
+	        List<MealDetailsDTO> mealDetailsDto = new ArrayList<>();  
+	        for (int i = 0; i < mealDetailList.size(); i++) {
+	            MealDetails mealDetail = mealDetailList.get(i);  
+	            MealDetailsDTO getDetail = mapToDto(mealDetail); 
+	            mealDetailsDto.add(getDetail);  
+	        }
+
+	        return mealDetailsDto;  
+	    }
 	    
+	    //Custom Queery with Projection
+
+	    @GetMapping("/customprojection")
+	    public List<MealDetailsProjection> findCustomMealDetails() {
+	        ResponseHandle response=mealDetailsService.findCustomMealDetails();
+	        
+	        List<MealDetailsProjection> mealDetail=response.getMealDetailProjection();
+	        return mealDetail;
+	        
+	    }
+
+	    //Named Querry with Aggregate 
+	    
+	    @GetMapping("/namedwithaggregate")
+	    public double getAvgCaloriesByDateRange(@RequestBody Map<String, String> dateRange) {
+
+	        LocalDate startDate = LocalDate.parse(dateRange.get("startDate"));
+	        LocalDate endDate = LocalDate.parse(dateRange.get("endDate"));
+	        ResponseHandle response = mealDetailsService.avgCaloriesByDateRange(startDate,endDate);
+	        double avgCalories=response.getCalories();
+	        // Return 0.0 if no records are found (to avoid null values)
+	        return avgCalories;
+	    }
+	    
+	    @GetMapping("/groupedQuantityAndCalories")
+	    public List<MealSummary> getAvgCaloriesAndTotalQuantity(@RequestParam("calorieThreshold") double calorieThreshold) {
+	       ResponseHandle response=mealDetailsService.findAvgCaloriesAndTotalQuantity(calorieThreshold);
+	       List<MealSummary> summary=response.getMealSummary();
+	       return summary;
+	    }
 	    
 	    public static MealDetailsDTO mapToDto(MealDetails fetchedDetail) {
 	    	
@@ -182,10 +215,11 @@ public class MealDetailController {
 	        mealDetailDto.setMealType(fetchedDetail.getMealType());
 	        mealDetailDto.setProtein(fetchedDetail.getProtein());
 	        mealDetailDto.setQuantity(fetchedDetail.getQuantity());
-	        // mealDetailDto.setUser(fetchedDetail.getUser()); // Optional
+	        // mealDetailDto.setUser(fetchedDetail.getUser()); 
 	        mealDetailDto.setVitamins(fetchedDetail.getVitamins());
 
 	        return mealDetailDto;
 	    }
-
+	    
+	   
 }

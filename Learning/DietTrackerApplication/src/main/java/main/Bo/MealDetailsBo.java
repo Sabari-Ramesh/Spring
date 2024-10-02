@@ -1,13 +1,15 @@
 package main.Bo;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import main.DAO.MealDetailsProjection;
 import main.DAO.MealDetailsRepository;
+import main.DAO.MealSummary;
 import main.DAO.UserRepo;
 import main.entity.MealDetails;
 import main.entity.Users;
@@ -75,6 +77,40 @@ public class MealDetailsBo {
 	public Users associationUserWithMealDetails(Users user) {
 	Users insertedUser=userRepo.save(user);	
 	return insertedUser;
+	
 	}
+
+
+   //Fetch ALl
+	
+	public List<MealDetails> fetchAll() {
+		List<MealDetails> mealDetails=mealDetailRepo.findAll();
+		return mealDetails;
+	}
+
+
+	//find Custom MealDetails
+
+	public List<MealDetailsProjection> findCustomMealDetails() {
+		List<MealDetailsProjection> mealDetail=mealDetailRepo.findCustomMealDetails();
+		return mealDetail;
+	}
+
+    //Named Querry with Aggregate
+
+	public double avgCaloriesByDateRange(LocalDate startDate, LocalDate endDate) {
+		Double avgCalorie=mealDetailRepo.findAvgCaloriesByDateRange(startDate,endDate);
+		System.out.println("Double "+avgCalorie);
+		return avgCalorie;
+	}
+
+    //Named Querr with Clauses
+
+	public List<MealSummary> findAvgCaloriesAndTotalQuantity(double calorie) {
+		List<MealSummary> mealSummary=mealDetailRepo.findAvgCaloriesAndTotalQuantity(calorie);
+		return mealSummary;
+		
+	}
+
 
 }

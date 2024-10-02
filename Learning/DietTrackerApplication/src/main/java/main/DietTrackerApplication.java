@@ -11,6 +11,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
+import main.DAO.MealDetailsProjection;
+import main.DAO.MealSummary;
 import main.DTO.MealDetailsDTO;
 import main.DTO.UsersDTO;
 import main.Response.ResponseHandle;
@@ -47,7 +49,8 @@ public class DietTrackerApplication {
 		while (flag) {
 			System.out.println("\t\t\t\tMenu");
 			System.out.println(
-					"\t\t\t1.insert\n\t\t\t2.Find By MealDetail Id\n\t\t\t3.Update\n\t\t\t4.DeleteByID\n\t\t\t5.Find MealDetails with User id\n\t\t\t6.Association User With MealDetails\n\t\t\t7.exit");
+					"\t\t\t1.insert\n\t\t\t2.Find By MealDetail Id\n\t\t\t3.Update\n\t\t\t4.DeleteByID\n\t\t\t5.Find MealDetails with User id\n\t\t\t6.Association User With MealDetails\n\t\t\t7.Fetch All\n\t\t\t"
+				+"8.Custom Querry With Projection\n\t\t\t9.Named Querry with Operator\n\t\t\t9.Named Querry with clauses\n\t\t\t11.exit");
 			System.out.println("Enter your Option");
 			int option = sc.nextInt();
 
@@ -77,7 +80,22 @@ public class DietTrackerApplication {
 				 application.associationUserWithMealDetails();
 				break;
 			}
-			case 7: {
+			case 7:{
+		     	application.fetchAll();
+				break;
+			}case 8:{
+				application.findCustomMealDetails();
+				break;
+			}
+			case 9:{
+				application.avgCaloriesByDateRange();
+				break;
+			}
+			case 10:{
+				application.findAvgCaloriesAndTotalQuantity();
+				break;
+			}
+			case 11: {
 				flag = false;
 				break;
 			}
@@ -92,6 +110,7 @@ public class DietTrackerApplication {
 	}
 
 
+
 	// INSERT
 
 	private void insert() {
@@ -102,8 +121,7 @@ public class DietTrackerApplication {
 		System.out.println("Enter User id :");
 		user.setId(sc.nextLong());
 		
-		mealDetail.setUser(user);
-System.out.println("Foreign Key"+mealDetail.getUser()); //-------------------------------------------
+		mealDetail.setUser(user); 
 		
 		System.out.println("Enter the Meal  Type :");
 		System.out.println("1.BreakFast\n2.Lunch\n3.Dinner\n4.Snacks");
@@ -293,7 +311,7 @@ System.out.println("Foreign Key"+mealDetail.getUser()); //----------------------
 			list.add(mealDetail);
 			
 		}
-		
+
 		user.setMealDetails(list);		
 		response=mealDetailService.associationUserWithMealDetails(user);
 		
@@ -305,5 +323,76 @@ System.out.println("Foreign Key"+mealDetail.getUser()); //----------------------
 		}
 		
 	}
+	
+	//Fetch All
+	
+	private void fetchAll() {
+		
+		response=mealDetailService.fetchAll();
+		List<MealDetails> mealDetails=response.getMealDetailsList();
+		
+		if(mealDetails.size()>0) {
+			System.out.println(mealDetails);
+			System.out.println(response.getSucessmessage());
+		}else {
+			System.out.println(response.getFailuremessage());
+		}
+		
+	}
+
+	//find Custom MealDetails
+	
+	private void findCustomMealDetails() {
+		response=mealDetailService.findCustomMealDetails();
+		List<MealDetailsProjection> mealDetail=response.getMealDetailProjection();
+		if(mealDetail.size()>0) {
+			System.out.println(response.getSucessmessage());
+			System.out.println(response.getMealDetailProjection());
+		}else {
+			response.getFailuremessage();
+		}
+	}
+	
+	//Named Querry With Aggregate
+	
+	private void avgCaloriesByDateRange() {
+		System.out.println("Enter the Start Date :");
+		String date = sc.next();
+		DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		LocalDate startDate = LocalDate.parse(date, format);
+		
+		System.out.println("Enter the End date :");
+		date = sc.next();
+		LocalDate endDate = LocalDate.parse(date, format);
+		
+		response=mealDetailService.avgCaloriesByDateRange(startDate,endDate);
+		
+		double avgCalorie=response.getCalories();
+		if(avgCalorie>0) {
+			System.out.println("Average Calories :"+avgCalorie);
+			System.out.println(response.getSucessmessage());
+		}else {
+			System.out.println(response.getFailuremessage());
+		}
+	}
+	
+	//Named with Clauses
+	
+	private void findAvgCaloriesAndTotalQuantity() {
+		System.out.println("Enter the Calories :");
+		double calorie=sc.nextDouble();
+		response=mealDetailService.findAvgCaloriesAndTotalQuantity(calorie);
+		List<MealSummary> mealSummary=response.getMealSummary();
+		if(mealSummary.size()>0) {
+			System.out.println(response.getSucessmessage());
+			for(int i=0;i<mealSummary.size();i++) {
+				MealSummary summary=mealSummary.get(i);
+				System.out.print(summary.getAvgCalories()+" "+summary.getTotalQuantity());
+			}
+		}else {
+			System.out.println(response.getFailuremessage());
+		}
+	}
+
 
 }
