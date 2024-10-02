@@ -11,7 +11,8 @@ import main.entity.MealDetails;
 @Component
 public class ResponseHandle {
 	
-	private String Sucessmessage;
+	
+	private String sucessMessage;
 	private String failuremessage;
 	private long id;
 	private List<MealSummary> mealSummary;
@@ -45,10 +46,10 @@ public class ResponseHandle {
 		this.mealDetailsList = mealDetailsList;
 	}
 	public String getSucessmessage() {
-		return Sucessmessage;
+		return sucessMessage;
 	}
-	public void setSucessmessage(String sucessmessage) {
-		Sucessmessage = sucessmessage;
+	public void setSucessmessage(String sucessMessage) {
+		sucessMessage = sucessMessage;
 	}
 	public String getFailuremessage() {
 		return failuremessage;

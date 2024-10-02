@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +28,10 @@ import main.entity.MealDetails;
 import main.entity.Users;
 import main.service.MealDetailsService;
 
+import main.Exceptions.*;
+
+
+
 @RestController
 @RequestMapping("/mealdetails")
 public class MealDetailController {
@@ -33,7 +40,7 @@ public class MealDetailController {
 	  
 	  
 	  // Insert Meal Detail
-	  @PostMapping("/add")
+/*	  @PostMapping("/add")
 	  public MealDetailsDTO insertMealDetail(@RequestBody MealDetailsDTO mealDetailDto) {
 
 	      // Convert DTO to Entity
@@ -58,7 +65,48 @@ public class MealDetailController {
 	      mealDetailDto.setId(inserted.getId());
 	      return mealDetailDto;
 	      
-	  }
+	  } */
+	  
+	  
+
+	    @PostMapping("/add")
+	    public ResponseEntity<?> insertMealDetail(@RequestBody MealDetailsDTO mealDetailDto) {
+	        
+	        	
+	            // Convert DTO to Entity
+	            MealDetails mealDetail = new MealDetails();
+	            mealDetail.setMealType(mealDetailDto.getMealType());
+	            mealDetail.setMealDate(mealDetailDto.getMealDate());
+	            mealDetail.setQuantity(mealDetailDto.getQuantity());
+	            mealDetail.setCalories(mealDetailDto.getCalories());
+	            mealDetail.setProtein(mealDetailDto.getProtein());
+	            mealDetail.setCarboHydrate(mealDetailDto.getCarboHydrate());
+	            mealDetail.setVitamins(mealDetailDto.getVitamins());
+	            mealDetail.setFoodName(mealDetailDto.getFoodName());
+	            mealDetail.setUser(mealDetailDto.getUser());
+
+	            try {
+
+	            ResponseHandle response = mealDetailsService.insertMealDetail(mealDetail);
+	            MealDetails inserted = response.getMealDetail();
+	            mealDetailDto.setDateCreated(inserted.getDateCreated());
+	            mealDetailDto.setLastUpdate(inserted.getLastUpdate());
+	            mealDetailDto.setId(inserted.getId());
+	            return ResponseEntity.ok(mealDetailDto);
+	            
+	        } catch (DataIntegrityViolationException | UserNotFound e) {
+	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+	        }catch(DateException e) {
+	        	return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+	        }catch(QuantityException e) {
+	        	return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+	        }catch(FoodNameException e) {
+	        	return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+	        }catch(MealTypeException e) {
+	        	return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+	        }
+	    }
+	
 
 	    
 	    //Find By meal Id

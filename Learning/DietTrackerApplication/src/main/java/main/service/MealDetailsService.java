@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -11,6 +12,11 @@ import main.Bo.MealDetailsBo;
 import main.DAO.MealDetailsProjection;
 import main.DAO.MealSummary;
 import main.DTO.UsersDTO;
+import main.Exceptions.DateException;
+import main.Exceptions.FoodNameException;
+import main.Exceptions.MealTypeException;
+import main.Exceptions.QuantityException;
+import main.Exceptions.UserNotFound;
 import main.Response.ResponseHandle;
 import main.entity.MealDetails;
 import main.entity.Users;
@@ -29,13 +35,10 @@ public class MealDetailsService {
 	
 
 	// Insert
+/*	@Transactional
 	public ResponseHandle insertMealDetail(MealDetails mealDetail) {
-		
-		//System.out.println("Serive "+mealDetail);
+
 		MealDetails insertedDetail = mealDetailBo.insertMealDetails(mealDetail);
-        
-		
-		//System.out.println(mealDetail+"Service ");
 		long id = insertedDetail.getId();
 
 		if (id > 0) {
@@ -48,6 +51,27 @@ public class MealDetailsService {
 		response.setId(id);
 
 		return response;
+	} */
+	
+	
+	@Transactional
+	public ResponseHandle insertMealDetail(MealDetails mealDetail) throws UserNotFound,DataIntegrityViolationException, DateException, QuantityException, FoodNameException, MealTypeException {
+
+
+	        MealDetails insertedDetail = mealDetailBo.insertMealDetails(mealDetail);
+	        long id = insertedDetail.getId();
+
+	        if (id > 0) {
+	            response.setSucessmessage("Details are Added Successfully");
+	            response.setMealDetail(insertedDetail);
+	        } else {
+	            response.setFailuremessage("Failure to Add Details " + id);
+	        }
+
+	        response.setId(id);
+	        return response;
+
+	   
 	}
 
 	// FindById

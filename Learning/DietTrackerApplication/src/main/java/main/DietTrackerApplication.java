@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import main.DAO.MealDetailsProjection;
 import main.DAO.MealSummary;
@@ -19,6 +20,8 @@ import main.Response.ResponseHandle;
 import main.entity.MealDetails;
 import main.entity.Users;
 import main.service.MealDetailsService;
+
+import main.Exceptions.*;
 
 @SpringBootApplication
 public class DietTrackerApplication {
@@ -49,8 +52,9 @@ public class DietTrackerApplication {
 		while (flag) {
 			System.out.println("\t\t\t\tMenu");
 			System.out.println(
-					"\t\t\t1.insert\n\t\t\t2.Find By MealDetail Id\n\t\t\t3.Update\n\t\t\t4.DeleteByID\n\t\t\t5.Find MealDetails with User id\n\t\t\t6.Association User With MealDetails\n\t\t\t7.Fetch All\n\t\t\t"
-				+"8.Custom Querry With Projection\n\t\t\t9.Named Querry with Operator\n\t\t\t9.Named Querry with clauses\n\t\t\t11.exit");
+					"\t\t\t1.insert\n\t\t\t2.Find By Id\n\t\t\t3.Update\n\t\t\t4.DeleteByID\n\t\t\t5.Find MealDetails with User id(Custom Querry)"+
+			        "\n\t\t\t6.Association User With MealDetails\n\t\t\t7.Fetch All\n\t\t\t"+
+				    "8.Custom Querry With Projection\n\t\t\t9.Named Querry with Aggregate\n\t\t\t10.Named Querry with clauses\n\t\t\t11.exit");
 			System.out.println("Enter your Option");
 			int option = sc.nextInt();
 
@@ -156,7 +160,19 @@ public class DietTrackerApplication {
 		
 		System.out.println("Main "+mealDetail);
 
-		response = mealDetailService.insertMealDetail(mealDetail);
+		try {
+			response = mealDetailService.insertMealDetail(mealDetail);
+		} catch (UserNotFound  | DataIntegrityViolationException e) {
+			System.err.println(e.getMessage());
+		} catch(DateException e) {
+			System.err.println(e.getMessage());
+		}catch(QuantityException e) {
+			System.err.println(e.getMessage());
+		}catch(FoodNameException e) {
+			System.err.println(e.getMessage());
+		}catch(MealTypeException e) {
+			System.err.println(e.getMessage());
+		}
 		
 
 		if (response.getSucessmessage() != null) {
