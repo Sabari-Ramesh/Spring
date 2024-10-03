@@ -45,7 +45,6 @@ public class Users {
     private int city;
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    @JsonIgnore
     private List<MealDetails> mealDetails= new ArrayList<>();
     
     @CreationTimestamp

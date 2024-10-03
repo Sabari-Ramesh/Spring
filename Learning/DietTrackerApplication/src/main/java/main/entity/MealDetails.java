@@ -48,7 +48,6 @@ public class MealDetails {
 
     
     @ManyToOne (fetch = FetchType.EAGER)//cascade = CascadeType.REMOVE,
-    @JsonIgnore
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
 

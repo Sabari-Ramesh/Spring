@@ -19,6 +19,7 @@ import main.Exceptions.InValidCityId;
 import main.Exceptions.InValidEmailException;
 import main.Exceptions.MealIdNotFoundException;
 import main.Exceptions.MealTypeException;
+import main.Exceptions.MobileException;
 import main.Exceptions.QuantityException;
 import main.Exceptions.UserNotFound;
 import main.entity.MealDetails;
@@ -112,7 +113,7 @@ public class MealDetailsBo {
 	    List<MealSummary> mealSummary = mealDetailRepo.findAvgCaloriesAndTotalQuantity(calorie);
 	    if (mealSummary == null || mealSummary.isEmpty()) {
 	        return new ArrayList<>(); 
-	    }
+	    }	  
 	    return mealSummary;
 	    
 	}
@@ -147,12 +148,13 @@ public class MealDetailsBo {
 	// User Association
 
 	public Users associationUserWithMealDetails(Users user) throws InValidCityId, FoodNameException,
-			InValidEmailException, DateException, QuantityException, MealTypeException {
+			InValidEmailException, DateException, QuantityException, MealTypeException, MobileException {
 
 		// Perform all validations before saving
 		validUserCity(user.getCity());
 		validName(user.getName(), "Name");
 		vailEmail(user.getEmail());
+		validMobileNumber(user.getMobileNumber());
 		List<MealDetails> validDetails = user.getMealDetails();
 
 		// Validate meal details
@@ -263,5 +265,12 @@ public class MealDetailsBo {
 			validMealType(mealDetail.getMealType());
 		}
 
+	}
+	
+	private void validMobileNumber(long mobileNumber) throws MobileException {
+		String no=mobileNumber+"";
+		if(no.length() != 10 || no.charAt(0) == '0') {
+			throw new MobileException("Enter Valid Mobile Number");
+		}
 	}
 }

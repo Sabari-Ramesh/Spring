@@ -281,6 +281,9 @@ public class MealDetailController {
 		} catch (MealTypeException e) {
 			log.error("InValid Meal Type Error :"+e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		}catch(MobileException e) {
+			log.error("InValid Mobile Number Error :"+e);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 
 	}

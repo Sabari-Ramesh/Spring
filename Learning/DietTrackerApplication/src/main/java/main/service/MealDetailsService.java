@@ -20,6 +20,7 @@ import main.Exceptions.InValidCityId;
 import main.Exceptions.InValidEmailException;
 import main.Exceptions.MealIdNotFoundException;
 import main.Exceptions.MealTypeException;
+import main.Exceptions.MobileException;
 import main.Exceptions.QuantityException;
 import main.Exceptions.UserNotFound;
 import main.Response.ResponseHandle;
@@ -152,14 +153,13 @@ public class MealDetailsService {
 	public ResponseHandle findAvgCaloriesAndTotalQuantity(double calorie) throws QuantityException {
 		
 		log.info("Find Avg Calories And Total Quantity Method is triggred...");
-		
 		List<MealSummary> mealSummary=new ArrayList<>();
 		 mealSummary = mealDetailBo.findAvgCaloriesAndTotalQuantity(calorie);
-		if (!mealSummary.isEmpty()) {
+		if (mealSummary.isEmpty()) {
+			response.setSucessMessage("No Details Available");
+		}else if(!mealSummary.isEmpty()) {
 			response.setMealSummary(mealSummary);
 			response.setSucessMessage("Sucessfully mealSummary Fetched !!!");
-		}else if(mealSummary.isEmpty()) {
-			response.setSucessMessage("No Details Available");
 		}else {
 			response.setFailuremessage("Failed to fetch mealSummary !!!");
 		}
@@ -208,7 +208,7 @@ public class MealDetailsService {
 	// Associate meal details with user
 
 	public ResponseHandle associationUserWithMealDetails(Users user) throws InValidCityId, FoodNameException,
-			InValidEmailException, DateException, QuantityException, MealTypeException {
+			InValidEmailException, DateException, QuantityException, MealTypeException, MobileException {
 		
 		log.info("Association Meal Detail With User Method is triggred...");
 

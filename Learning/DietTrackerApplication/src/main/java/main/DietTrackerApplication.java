@@ -293,15 +293,16 @@ public class DietTrackerApplication {
 	    try {
 	        response = mealDetailService.findAvgCaloriesAndTotalQuantity(calorie);
 	        List<MealSummary> mealSummary = response.getMealSummary();
-	        if (mealSummary != null && !mealSummary.isEmpty()) {
+	        if (mealSummary == null || mealSummary.isEmpty()) {
+	            System.out.println(response.getSucessmessage());
+
+	        }
+	        else if (mealSummary != null && !mealSummary.isEmpty()) {
 	            System.out.println(response.getSucessmessage());
 	            for (MealSummary summary : mealSummary) {
 	                System.out.print(summary.getAvgCalories() + " " + summary.getTotalQuantity());
 	                System.out.println();
 	            }
-
-	        } else if (mealSummary == null || mealSummary.isEmpty()) {
-	            System.out.println(response.getSucessmessage());
 
 	        } else {
 	            System.out.println(response.getFailuremessage());
@@ -454,6 +455,8 @@ public class DietTrackerApplication {
 		} catch (DateException e) {
 			System.err.println(e.getMessage());
 		} catch (QuantityException e) {
+			System.err.println(e.getMessage());
+		}catch(MobileException e) {
 			System.err.println(e.getMessage());
 		}
 
