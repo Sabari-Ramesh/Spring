@@ -4,12 +4,12 @@ import java.time.LocalDate;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,6 +34,7 @@ import jakarta.persistence.NamedQuery;
                     "ORDER BY AVG(m.calories) DESC"
         )
 })
+@EntityListeners(AuditingEntityListener.class)
 public class MealDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,7 +48,7 @@ public class MealDetails {
     private LocalDate mealDate;
 
     
-    @ManyToOne (fetch = FetchType.EAGER)//cascade = CascadeType.REMOVE,
+    @ManyToOne (fetch = FetchType.EAGER)//cascade = CascadeType.ALL,
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
 

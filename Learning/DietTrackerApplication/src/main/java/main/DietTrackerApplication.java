@@ -13,19 +13,28 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import main.DAO.MealDetailsProjection;
 import main.DAO.MealSummary;
 import main.DTO.MealDetailsDTO;
 import main.DTO.UsersDTO;
+import main.Exceptions.DateException;
+import main.Exceptions.FoodNameException;
+import main.Exceptions.InValidCityId;
+import main.Exceptions.InValidEmailException;
+import main.Exceptions.MealIdNotFoundException;
+import main.Exceptions.MealTypeException;
+import main.Exceptions.MobileException;
+import main.Exceptions.QuantityException;
+import main.Exceptions.UserNotFound;
 import main.Response.ResponseHandle;
 import main.entity.MealDetails;
 import main.entity.Users;
 import main.service.MealDetailsService;
 
-import main.Exceptions.*;
-
 @SpringBootApplication
+@EnableJpaAuditing
 public class DietTrackerApplication {
 
 	@Autowired
@@ -48,6 +57,8 @@ public class DietTrackerApplication {
 	public static void main(String[] args) {
 		
 		ApplicationContext context = SpringApplication.run(DietTrackerApplication.class, args);
+		
+		
 		DietTrackerApplication application = context.getBean(DietTrackerApplication.class);
 		
     	PropertyConfigurator.configure("D:\\SpringWorkSpace\\DietTrackerApplication\\src\\main\\java\\log4j\\log4j.properties");
@@ -308,7 +319,7 @@ public class DietTrackerApplication {
 	            System.out.println(response.getFailuremessage());
 	        }
 	    } catch (QuantityException e) {
-	        System.err.println(e.getMessage());
+	        System.err.println(e.getMessage()); // NOPMD by DELL on 10/6/24, 1:02 PM
 	    }
 	    
 	}
@@ -458,7 +469,7 @@ public class DietTrackerApplication {
 			System.err.println(e.getMessage());
 		}catch(MobileException e) {
 			System.err.println(e.getMessage());
-		}
+		} 
 
 	}
 

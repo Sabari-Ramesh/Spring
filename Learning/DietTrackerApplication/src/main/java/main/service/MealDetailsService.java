@@ -156,6 +156,7 @@ public class MealDetailsService {
 		List<MealSummary> mealSummary=new ArrayList<>();
 		 mealSummary = mealDetailBo.findAvgCaloriesAndTotalQuantity(calorie);
 		if (mealSummary.isEmpty()) {
+			response.setMealSummary(mealSummary);
 			response.setSucessMessage("No Details Available");
 		}else if(!mealSummary.isEmpty()) {
 			response.setMealSummary(mealSummary);

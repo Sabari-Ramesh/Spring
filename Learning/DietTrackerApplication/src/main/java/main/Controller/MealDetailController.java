@@ -66,24 +66,25 @@ public class MealDetailController {
 			mealDetailDto.setDateCreated(inserted.getDateCreated());
 			mealDetailDto.setLastUpdate(inserted.getLastUpdate());
 			mealDetailDto.setId(inserted.getId());
-			log.info("Meal Details is Sucessfully Created "+mealDetailDto.getId());
+			String str="Meal Details is Sucessfully Created "+mealDetailDto.getId();
+			log.info(str);
 			return ResponseEntity.ok("Meal Details are Sucessfully Created and Your Generated Meal Id : "+mealDetailDto.getId());
 			
 
 		} catch (DataIntegrityViolationException | UserNotFound e) {
-			log.error("Duplicate Entry : "+e);
+			log.error("Duplicate Entry : ",e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		} catch (DateException e) {
-			log.error("Date Error :"+e);
+			log.error("Date Error :",e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		} catch (QuantityException e) {
-			log.error("Qunatity Error :"+e);
+			log.error("Qunatity Error :",e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		} catch (FoodNameException e) {
-			log.error("Food Name Error :"+e);
+			log.error("Food Name Error :",e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		} catch (MealTypeException e) {
-			log.error("Meal Type Error :"+e);
+			log.error("Meal Type Error :",e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 
@@ -107,7 +108,7 @@ public class MealDetailController {
 			return ResponseEntity.ok(mapToDto(fetchedDetail));
 
 		} catch (MealIdNotFoundException e) {
-			log.error("Meal Id Not Found Error :"+e);
+			log.error("Meal Id Not Found Error :",e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 
@@ -158,7 +159,7 @@ public class MealDetailController {
 			}
 
 		} catch (UserNotFound e) {
-			log.error("User Not Found Error : "+e);
+			log.error("User Not Found Error : ",e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 
@@ -176,10 +177,11 @@ public class MealDetailController {
 			
 		ResponseHandle response = mealDetailsService.avgCaloriesByDateRange(startDate, endDate);
 		double avgCalories = response.getCalories();
-		log.info("Average Calories "+avgCalories);
+		String str="Average Calories "+avgCalories;
+		log.info(str);
 		return ResponseEntity.ok("Average Calories "+avgCalories);
 		}catch(DateException e) {
-			log.error("Date Error :"+e);
+			log.error("Date Error :",e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 
@@ -219,7 +221,7 @@ public class MealDetailController {
 			}
 
 		} catch (QuantityException e) {
-			log.error("Quantity Error :"+e);
+			log.error("Quantity Error :",e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 	}
@@ -258,31 +260,32 @@ public class MealDetailController {
 		user.setMealDetails(mealDetailsList);
 		try {
 			ResponseHandle response = mealDetailsService.associationUserWithMealDetails(user);
-			log.info(response.getSucessmessage());
+			String str=response.getSucessmessage();
+			log.info(str);
 			return ResponseEntity.ok(response.getSucessmessage());
 		} catch (InValidCityId e) {
-			log.error("InValid City Error :"+e);
+			log.error("InValid City Error :",e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		} catch (FoodNameException e) {
-			log.error("InValid Food Name Error :"+e);
+			log.error("InValid Food Name Error :",e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		} catch (InValidEmailException e) {
-			log.error("InValid Error :"+e);
+			log.error("InValid Error :",e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		} catch (DataIntegrityViolationException e) {
-			log.error("Duplicate Entry Error :"+e);
+			log.error("Duplicate Entry Error :",e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate Entry ");
 		} catch (DateException e) {
-			log.error("InValid Date Error :"+e);
+			log.error("InValid Date Error :",e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		} catch (QuantityException e) {
-			log.error("InValid Quantity Error :"+e);
+			log.error("InValid Quantity Error :",e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		} catch (MealTypeException e) {
-			log.error("InValid Meal Type Error :"+e);
+			log.error("InValid Meal Type Error :",e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}catch(MobileException e) {
-			log.error("InValid Mobile Number Error :"+e);
+			log.error("InValid Mobile Number Error :",e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 
@@ -305,10 +308,10 @@ public class MealDetailController {
 			log.info(fetchedDetail);
 			return ResponseEntity.ok(mapToDto(fetchedDetail));
 		} catch (MealIdNotFoundException e) {
-			log.error("Meal Id Not Found Error :"+e);
+			log.error("Meal Id Not Found Error :",e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		} catch (FoodNameException e) {
-			log.error("InValid Food Name Error :"+e);
+			log.error("InValid Food Name Error :",e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 
@@ -324,10 +327,11 @@ public class MealDetailController {
 
 		try {
 			ResponseHandle response = mealDetailsService.deleteId(mealDetail);
-			log.info(response.getId() + " Sucessfully Deleted");
+			String str=response.getId() + " Sucessfully Deleted";
+			log.info(str);
 			return ResponseEntity.ok(response.getId() + " Sucessfully Deleted");
 		} catch (MealIdNotFoundException e) {
-			log.error("Id Not Found Error :"+e);
+			log.error("Id Not Found Error :",e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 
