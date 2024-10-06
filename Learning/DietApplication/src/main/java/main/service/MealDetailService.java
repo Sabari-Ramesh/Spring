@@ -4,23 +4,40 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import main.BO.MealDetailsBO;
 import main.DAO.MealDetailsProjection;
 import main.DAO.MealSummary;
+import main.Exception.DateException;
+import main.Exception.MealTypeException;
+import main.Exception.NameException;
+import main.Exception.QuantityException;
+import main.Exception.UserNotFound;
 import main.entity.MealDetails;
+import main.response.Response;
 
 @Service
 public class MealDetailService {
 	
 	@Autowired
 	MealDetailsBO mealDetailBo;
+	
+	@Autowired
+	private Response response;
 
 	//2.Insert
 	
-	public void insertDetails(MealDetails mealDetail) {
-		mealDetailBo.insertDetails(mealDetail);
+	public Response insertDetails(MealDetails mealDetail) throws DataIntegrityViolationException, UserNotFound, DateException, QuantityException, NameException, MealTypeException {
+		MealDetails detail=mealDetailBo.insertDetails(mealDetail);
+		if(detail!=null) {
+			response.setSucessMsg("Details are Added Sucessfully !!!");
+			response.setId(detail.getMealId());
+		}else {
+			response.setFailureMsg("Details are not Added Sucessfully !!!");
+		}
+		return response;
 	}
 
 	//3.Find By Id

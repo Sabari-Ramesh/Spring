@@ -23,17 +23,17 @@ public class DietApplication {
         ApplicationContext context = SpringApplication.run(DietApplication.class, args);
         
         DietApplication application = context.getBean(DietApplication.class);
-        application.avgCaloriesAndTotalQuantity();        
+      //  application.avgCaloriesAndTotalQuantity();        
   
     }
 
 
-
-	private void avgCaloriesAndTotalQuantity() {
-		
-		List<MealSummary> list=mealDetailService.avgCaloriesAndTotalQuantity(100.5);
-		System.out.println(list);
-	}
+//
+//	private void avgCaloriesAndTotalQuantity() {
+//		
+//		List<MealSummary> list=mealDetailService.avgCaloriesAndTotalQuantity(100.5);
+//		System.out.println(list);
+//	}
 
   
 

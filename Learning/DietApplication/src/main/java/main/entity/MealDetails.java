@@ -18,9 +18,6 @@ import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 
 @Entity
-
-//6.Named Querry
-
 @NamedQueries({
 @NamedQuery(	
 	    name = "MealDetails.findByQuantityRange",
@@ -50,8 +47,8 @@ public class MealDetails {
     @Column(name = "meal_date", nullable = false)
     private LocalDate mealDate;
 
-    // Removed cascade from User
-    @ManyToOne(fetch = FetchType.EAGER)  // Optional: use FetchType.LAZY
+    
+    @ManyToOne(fetch = FetchType.EAGER) 
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 

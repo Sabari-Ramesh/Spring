@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +23,10 @@ import main.DTO.MealDetailDTO;
 import main.entity.MealDetails;
 import main.entity.MealInfo;
 import main.entity.User;
+import main.response.Response;
 import main.service.MealDetailService;
+
+import main.Exception.*;
 
 @RestController
 @RequestMapping("/mealdetails")
@@ -29,13 +34,37 @@ public class MealDetailController {
 
 	@Autowired
 	private MealDetailService mealDetailService;
+	
+	@Autowired
+	private Response response;
 
 	//2.Insert
 
 	@PostMapping("/insert")
-	private void insertMealDetail(@RequestBody MealDetailDTO mealDetailDto) {
+	private ResponseEntity<?> insertMealDetail(@RequestBody MealDetailDTO mealDetailDto) {
+		
+		try {
+			
 		MealDetails mealDetail=mapToEntity(mealDetailDto);
-		 mealDetailService.insertDetails(mealDetail);
+		 response=mealDetailService.insertDetails(mealDetail);
+		 if(response.getSucessMsg()!=null) {
+			
+			 return ResponseEntity.ok("Meal Details are Sucessfully Created and Your Generated Meal Id : "+response.getId());
+		 }else {
+			 return ResponseEntity.ok("Meal Details are not Sucessfully Created");
+		 }
+		}catch (DataIntegrityViolationException | UserNotFound e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		} catch (DateException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		} catch (QuantityException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		} catch (NameException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		} catch (MealTypeException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		}
+		 
 	}
 	
 	//3.Find By Id

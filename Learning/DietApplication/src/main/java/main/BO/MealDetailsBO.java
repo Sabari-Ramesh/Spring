@@ -2,14 +2,21 @@ package main.BO;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import main.DAO.MealDetailsProjection;
 import main.DAO.MealDetailsRepository;
 import main.DAO.MealSummary;
+import main.DAO.UserRepository;
 import main.entity.MealDetails;
+import main.entity.MealInfo;
+import main.entity.User;
+
+import main.Exception.*;
 
 @Component
 public class MealDetailsBO {
@@ -17,11 +24,27 @@ public class MealDetailsBO {
 	@Autowired
 	private MealDetailsRepository mealDetailRepo;
 	
+	@Autowired
+	private UserRepository userRepo;
+	
 	//2.Insert
 	
-	public void insertDetails(MealDetails mealDetail) {
-		mealDetailRepo.save(mealDetail);
-		System.out.println("hi");
+	public MealDetails insertDetails(MealDetails mealDetail) throws DataIntegrityViolationException, UserNotFound, DateException, QuantityException, NameException, MealTypeException {
+		
+		validUser(mealDetail.getUser());
+		validDate(mealDetail.getMealDate());
+		validQuantity(mealDetail.getCalories(), " Calories ");
+		validQuantity(mealDetail.getCarbs(), " CarboHydrates");
+		validQuantity(mealDetail.getProtein(), " Protein");
+		validQuantity(mealDetail.getQuantity(), " Quantity");
+		validQuantity(mealDetail.getVitamins(), " Vitamins");
+		validName(mealDetail.getFoodName(), " FoodName");
+		validMealType(mealDetail.getMealType());
+		
+		MealDetails detail=mealDetailRepo.save(mealDetail);
+		return detail;
+		
+		
 	}
 	
 	//3. Find By Id
@@ -75,5 +98,40 @@ public class MealDetailsBO {
 		 List<MealSummary> list = mealDetailRepo.avgCaloriesAndTotalQuantity(calorieThreshold); 
 		    return list;
 	}
+	
+	//Validation
+	
+	private void validUser(User user) throws UserNotFound,DataIntegrityViolationException {
+		Optional<User> userOptional = userRepo.findById(user.getUserId());
+		if (!userOptional.isPresent()) {
+			throw new UserNotFound("ERROR : User does not exist");
+		}
+	}
+	
+	private void validDate(LocalDate mealDate) throws DateException {
+		LocalDate currentDate = LocalDate.now();
+		if (mealDate.isAfter(currentDate)) {
+			throw new DateException("ERROR : In valid Date");
+		}
+	}
+	
+	private void validQuantity(double quantity, String string) throws QuantityException {
+		if (quantity <= 0) {
+			throw new QuantityException("ERRROR :In valid" + string);
+		}
+	}
+	
+	private void validName(String name, String msg) throws NameException {
+		if (name == null) {
+			throw new NameException("ERROR : Invalid " + msg);
+		}
+	}
+	private void validMealType(MealInfo mealInfo) throws MealTypeException {
+		int mealId=mealInfo.getMealType();
+		if (mealId <= 0 || mealId >=5) {
+			throw new MealTypeException("ERROR : Invalid Meal Type");
+		}
+	}
 
+	
 }
