@@ -13,9 +13,19 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 
 @Entity
+
+//6.Named Querry
+
+@NamedQuery(
+	    name = "MealDetails.findByQuantityRange",
+	    query = "SELECT m FROM MealDetails m WHERE m.quantity BETWEEN :minQuantity AND :maxQuantity"
+	)
+
+
 @Table(name = "meal_details")
 public class MealDetails {
 

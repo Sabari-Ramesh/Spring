@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import main.DTO.MealDetailDTO;
@@ -24,7 +25,7 @@ public class MealDetailController {
 	@Autowired
 	private MealDetailService mealDetailService;
 
-	// Insert
+	//2.Insert
 
 	@PostMapping("/insert")
 	private void insertMealDetail(@RequestBody MealDetailDTO mealDetailDto) {
@@ -32,7 +33,7 @@ public class MealDetailController {
 		 mealDetailService.insertDetails(mealDetail);
 	}
 	
-	//Find By Id
+	//3.Find By Id
 	
 	@GetMapping("/fetchByid/{id}")
 	public MealDetailDTO findByMealId(@PathVariable("id") long id) {
@@ -43,7 +44,7 @@ public class MealDetailController {
 		return mealDetailDto;
 	}
 
-	//Find All
+	//4.Find All
 	
 	@GetMapping("/findAll")
 	public List<MealDetailDTO> findAll(){
@@ -61,7 +62,7 @@ public class MealDetailController {
 	}
 	
 	
-	//Find By User Id
+	//5.Find By User Id ( Custom Query )
 	
 	@GetMapping("/findbyuserId/{userId}")
 	public List<MealDetailDTO> findMealDetailsByUserId(@PathVariable("userId") long userId){
@@ -76,6 +77,22 @@ public class MealDetailController {
 		
 		return mealDto;
 	}
+	
+	//6. Find By Quantity Range (Named Query)
+	
+	  @GetMapping("/quantityRange")
+	    public List<MealDetailDTO> getMealsByQuantityRange(@RequestParam double min, @RequestParam double max) {
+		  List<MealDetails> mealDetail=mealDetailService.findByQuantityRange(min, max);
+		  List<MealDetailDTO> mealDto=new ArrayList<>();
+			
+			for(int i=0;i<mealDetail.size();i++) {
+				MealDetails detail=mealDetail.get(i);
+				MealDetailDTO mealDetailDto=maptoDto(detail);
+				mealDto.add(mealDetailDto);
+			}
+			
+			return mealDto;
+	    }
 	
 	//Map to Dto
 	

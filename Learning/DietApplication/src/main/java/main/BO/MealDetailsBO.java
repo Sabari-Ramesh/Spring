@@ -35,10 +35,17 @@ public class MealDetailsBO {
 		return mealDetail;
 	}
 
-	//Find By User Id
+	//5.Find By User Id( Custom Querry )
 	
 	public List<MealDetails> fetchByUserId(long id) {
 		List<MealDetails> mealDetail=mealDetailRepo.findMealDetailsByUserId(id);
+		return mealDetail;
+	}
+	
+	//6.Find By min and max Quantity ( Named Querry )
+
+	public List<MealDetails> findByQuantityRange(double min, double max) {
+		List<MealDetails> mealDetail=mealDetailRepo.findByQuantityRange(min,max);
 		return mealDetail;
 	}
 

@@ -30,14 +30,21 @@ public class MealDetailService {
 	//4.Find All
 	
 	public List<MealDetails> fetchAll() {
-		List<MealDetails> mealDetaillist=mealDetailBo.fetchAll();
-		return mealDetaillist;
+		List<MealDetails> mealDetailList=mealDetailBo.fetchAll();
+		return mealDetailList;
 	}
 	
 	//5.Custom Querry 
 	
 	public List<MealDetails> fetchByUserId(long id) {
-		List<MealDetails> mealDetaillist=mealDetailBo.fetchByUserId(id);
-		return mealDetaillist;
+		List<MealDetails> mealDetailList=mealDetailBo.fetchByUserId(id);
+		return mealDetailList;
+	}
+	
+	//6.Named Querry
+
+	public List<MealDetails> findByQuantityRange(double min,double max) {
+		List<MealDetails> mealDetailList=mealDetailBo.findByQuantityRange(min,max);
+		return mealDetailList;
 	}
 }

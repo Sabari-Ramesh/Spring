@@ -30,7 +30,7 @@ public class DietApplication {
   
 
 	private void fetchByUserId() {
-		List<MealDetails> mealDetail=mealDetailService.fetchByUserId(1L);
+		List<MealDetails> mealDetail=mealDetailService.findByQuantityRange(10.5,500.4);
 		System.out.println(mealDetail);
 	}
 
