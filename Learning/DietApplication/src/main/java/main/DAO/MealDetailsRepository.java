@@ -1,5 +1,6 @@
 package main.DAO;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,5 +22,15 @@ public interface MealDetailsRepository extends JpaRepository<MealDetails,Long>{
 	
 	 @Query(name = "MealDetails.findByQuantityRange")
 	 List<MealDetails> findByQuantityRange(@Param("minQuantity") double minQuantity, @Param("maxQuantity") double maxQuantity);
+	 
+	 
+	 //7.Custom Query With Projection
+	 
+	 @Query("SELECT m.foodName AS foodName, m.quantity AS quantity, m.id AS id, m.mealDate AS date FROM MealDetails m")
+	 List<MealDetailsProjection> findCustomMealDetails();
+	 
+	 //8.Custom Query with Aggregate Function
+	 @Query("SELECT AVG(m.calories) FROM MealDetails m WHERE m.mealDate BETWEEN :startDate AND :endDate")
+	 Double findAvgCaloriesByDateRange(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
 }

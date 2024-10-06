@@ -1,10 +1,12 @@
 package main.BO;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import main.DAO.MealDetailsProjection;
 import main.DAO.MealDetailsRepository;
 import main.entity.MealDetails;
 
@@ -47,6 +49,23 @@ public class MealDetailsBO {
 	public List<MealDetails> findByQuantityRange(double min, double max) {
 		List<MealDetails> mealDetail=mealDetailRepo.findByQuantityRange(min,max);
 		return mealDetail;
+	}
+	
+	//7.Custom querry with Projection
+
+	public List<MealDetailsProjection> findCustomMealDetails() {
+		List<MealDetailsProjection> mealDetailProjection=mealDetailRepo.findCustomMealDetails();
+		return mealDetailProjection;
+	}
+	
+	//8.Custom Query with Aggregate function
+	
+	public double findAvgCaloriesByDateRange(LocalDate startDate,LocalDate endDate) {
+	Double avgCalorie = mealDetailRepo.findAvgCaloriesByDateRange(startDate, endDate);
+	if (avgCalorie == null) {
+		 return 0.0;
+	}
+	return avgCalorie;
 	}
 
 }

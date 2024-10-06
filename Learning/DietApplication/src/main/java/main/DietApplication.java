@@ -1,6 +1,6 @@
 package main;
 
-import java.util.List;
+import java.time.LocalDate;
 import java.util.Scanner;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +8,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
-import main.entity.MealDetails;
 import main.service.MealDetailService;
 
 @SpringBootApplication
@@ -23,16 +22,20 @@ public class DietApplication {
         ApplicationContext context = SpringApplication.run(DietApplication.class, args);
         
         DietApplication application = context.getBean(DietApplication.class);
-        application.fetchByUserId();        
+        application.findAvgCaloriesByDateRange();        
   
     }
 
-  
 
-	private void fetchByUserId() {
-		List<MealDetails> mealDetail=mealDetailService.findByQuantityRange(10.5,500.4);
-		System.out.println(mealDetail);
+
+	private void findAvgCaloriesByDateRange() {
+		 LocalDate startDate = LocalDate.parse("2020-01-10");
+	     LocalDate endDate = LocalDate.parse("2024-10-05");
+		double avgCalorie=mealDetailService.findAvgCaloriesByDateRange(startDate,endDate);
+		System.out.println(avgCalorie);
 	}
+
+  
 
     // fetchbyid
    

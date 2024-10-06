@@ -1,9 +1,12 @@
 package main.Controller;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import main.DAO.MealDetailsProjection;
 import main.DTO.MealDetailDTO;
 import main.entity.MealDetails;
 import main.entity.MealInfo;
@@ -80,7 +84,7 @@ public class MealDetailController {
 	
 	//6. Find By Quantity Range (Named Query)
 	
-	  @GetMapping("/quantityRange")
+	  @GetMapping("quantityRange")
 	    public List<MealDetailDTO> getMealsByQuantityRange(@RequestParam double min, @RequestParam double max) {
 		  List<MealDetails> mealDetail=mealDetailService.findByQuantityRange(min, max);
 		  List<MealDetailDTO> mealDto=new ArrayList<>();
@@ -93,6 +97,28 @@ public class MealDetailController {
 			
 			return mealDto;
 	    }
+	  
+	  
+	  //7.Custom Query with Projection
+	  
+	  @GetMapping("/customprojection")
+		public List<MealDetailsProjection> findCustomMealDetails() {
+			
+		  List<MealDetailsProjection> mealDetailProjection =mealDetailService.findCustomMealDetails();
+
+			return mealDetailProjection;
+
+		}
+	  
+	  //8.Custom with Aggregate
+		@GetMapping("/aggregate")
+		public double getAvgCaloriesByDateRange(@RequestBody Map<String, String> dateRange) {
+
+			LocalDate startDate = LocalDate.parse(dateRange.get("startDate"));
+			LocalDate endDate = LocalDate.parse(dateRange.get("endDate"));
+			double avgCalorie=mealDetailService.findAvgCaloriesByDateRange(startDate, endDate);
+			return avgCalorie;
+		}
 	
 	//Map to Dto
 	
