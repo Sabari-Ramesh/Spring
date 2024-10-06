@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 import main.DAO.MealDetailsProjection;
 import main.DAO.MealSummary;
-import main.DTO.MealDetailDTO;
+import main.entity.MealDetails;
 
 @Component
 public class Response {
@@ -15,7 +15,8 @@ public class Response {
 	private String failureMsg;
 	private long id;
 	private double avg;
-	private List<MealDetailDTO> mealDetailDto;
+	private MealDetails mealDetail;
+	private List<MealDetails> mealDetailsList;
 	private List<MealDetailsProjection> mealDetailProjection;
 	private List<MealSummary> mealSummary;
 	
@@ -34,11 +35,11 @@ public class Response {
 	public void setAvg(double avg) {
 		this.avg = avg;
 	}
-	public List<MealDetailDTO> getMealDetailDto() {
-		return mealDetailDto;
+	public List<MealDetails> getMealDetailDto() {
+		return mealDetailsList;
 	}
-	public void setMealDetailDto(List<MealDetailDTO> mealDetailDto) {
-		this.mealDetailDto = mealDetailDto;
+	public void setMealDetails(List<MealDetails> mealDetailDto) {
+		this.mealDetailsList = mealDetailDto;
 	}
 	public List<MealDetailsProjection> getMealDetailProjection() {
 		return mealDetailProjection;
@@ -64,15 +65,26 @@ public class Response {
 	public void setFailureMsg(String failureMsg) {
 		this.failureMsg = failureMsg;
 	}
+	public MealDetails getMealDetail() {
+		return mealDetail;
+	}
+	public void setMealDetail(MealDetails mealDetail) {
+		this.mealDetail = mealDetail;
+	}
+	public List<MealDetails> getMealDetailsList() {
+		return mealDetailsList;
+	}
+	public void setMealDetailsList(List<MealDetails> mealDetailsList) {
+		this.mealDetailsList = mealDetailsList;
+	}
 	
 	//To String
 	
 	@Override
 	public String toString() {
 		return "Response [SucessMsg=" + SucessMsg + ", failureMsg=" + failureMsg + ", id=" + id + ", avg=" + avg
-				+ ", mealDetailDto=" + mealDetailDto + ", mealDetailProjection=" + mealDetailProjection
-				+ ", mealSummary=" + mealSummary + "]";
+				+ ", mealDetail=" + mealDetail + ", mealDetailsList=" + mealDetailsList + ", mealDetailProjection="
+				+ mealDetailProjection + ", mealSummary=" + mealSummary + "]";
 	}
-
 	
 }

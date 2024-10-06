@@ -11,6 +11,7 @@ import main.BO.MealDetailsBO;
 import main.DAO.MealDetailsProjection;
 import main.DAO.MealSummary;
 import main.Exception.DateException;
+import main.Exception.MealIdNotFoundException;
 import main.Exception.MealTypeException;
 import main.Exception.NameException;
 import main.Exception.QuantityException;
@@ -42,9 +43,18 @@ public class MealDetailService {
 
 	//3.Find By Id
 	
-	public MealDetails fetchById(long id) {
-		MealDetails detail=mealDetailBo.fetchById(id);
-		return detail;
+	public Response fetchById(long id) throws MealIdNotFoundException{
+		
+		MealDetails fetchedDetail = mealDetailBo.fetchById(id);
+
+		if (fetchedDetail != null) {
+			response.setSucessMsg("Details are Sucessfully fetched..");
+			response.setMealDetail(fetchedDetail);
+		} else {
+			response.setFailureMsg("Details are not fetched Sucessfully");
+		}
+
+		return response;
 	}
 
 	//4.Find All

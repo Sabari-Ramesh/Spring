@@ -70,12 +70,16 @@ public class MealDetailController {
 	//3.Find By Id
 	
 	@GetMapping("/fetchByid/{id}")
-	public MealDetailDTO findByMealId(@PathVariable("id") long id) {
-		MealDetails detail=mealDetailService.fetchById(id);
+	public ResponseEntity<?> findByMealId(@PathVariable("id") long id) {
 		
-		MealDetailDTO mealDetailDto=maptoDto(detail);
-		
-		return mealDetailDto;
+		try {
+		response=mealDetailService.fetchById(id);
+		MealDetails detail=response.getMealDetail();
+		MealDetailDTO mealDetailDto=maptoDto(detail);	
+		return ResponseEntity.ok(mealDetailDto);
+		} catch (MealIdNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		}
 	}
 
 	//4.Find All

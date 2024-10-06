@@ -49,7 +49,8 @@ public class MealDetailsBO {
 	
 	//3. Find By Id
 
-	public MealDetails fetchById(long id) {
+	public MealDetails fetchById(long id) throws MealIdNotFoundException {
+		validMealId(id);
 		MealDetails detail=mealDetailRepo.findById(id).get();
 		return detail;
 	}
@@ -130,6 +131,13 @@ public class MealDetailsBO {
 		int mealId=mealInfo.getMealType();
 		if (mealId <= 0 || mealId >=5) {
 			throw new MealTypeException("ERROR : Invalid Meal Type");
+		}
+	}
+	private void validMealId(long id) throws MealIdNotFoundException {
+		Optional<MealDetails> mealDetailOptional = mealDetailRepo.findById(id);
+
+		if (!mealDetailOptional.isPresent()) {
+			throw new MealIdNotFoundException("ERROR: MealId " + id + " does not exist in the database");
 		}
 	}
 
