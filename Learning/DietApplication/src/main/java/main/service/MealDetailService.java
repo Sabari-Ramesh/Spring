@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import main.BO.MealDetailsBO;
 import main.DAO.MealDetailsProjection;
+import main.DAO.MealSummary;
 import main.entity.MealDetails;
 
 @Service
@@ -61,5 +62,12 @@ public class MealDetailService {
 	public double findAvgCaloriesByDateRange(LocalDate startDate,LocalDate endDate) {
 		double avgCalorie=mealDetailBo.findAvgCaloriesByDateRange(startDate, endDate);
 		return avgCalorie;
+	}
+
+	//9.Named with Clauses
+	
+	public List<MealSummary> avgCaloriesAndTotalQuantity(double calorieThreshold) {
+		List<MealSummary> list=mealDetailBo.avgCaloriesAndTotalQuantity(calorieThreshold);
+		return list;
 	}
 }

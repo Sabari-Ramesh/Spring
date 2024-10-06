@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import main.DAO.MealDetailsProjection;
 import main.DAO.MealDetailsRepository;
+import main.DAO.MealSummary;
 import main.entity.MealDetails;
 
 @Component
@@ -66,6 +67,13 @@ public class MealDetailsBO {
 		 return 0.0;
 	}
 	return avgCalorie;
+	}
+	
+	//9.Named with Clauses
+
+	public List<MealSummary> avgCaloriesAndTotalQuantity(double calorieThreshold) {
+		 List<MealSummary> list = mealDetailRepo.avgCaloriesAndTotalQuantity(calorieThreshold); 
+		    return list;
 	}
 
 }

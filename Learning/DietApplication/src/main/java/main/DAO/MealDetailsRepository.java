@@ -32,5 +32,9 @@ public interface MealDetailsRepository extends JpaRepository<MealDetails,Long>{
 	 //8.Custom Query with Aggregate Function
 	 @Query("SELECT AVG(m.calories) FROM MealDetails m WHERE m.mealDate BETWEEN :startDate AND :endDate")
 	 Double findAvgCaloriesByDateRange(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+	 
+	 @Query(name = "MealDetails.avgCaloriesAndTotalQuantity")
+	 List<MealSummary> avgCaloriesAndTotalQuantity(@Param("calorieThreshold") double calorieThreshold);
+
 
 }

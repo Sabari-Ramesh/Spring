@@ -13,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 
@@ -20,10 +21,18 @@ import jakarta.persistence.Table;
 
 //6.Named Querry
 
-@NamedQuery(
+@NamedQueries({
+@NamedQuery(	
 	    name = "MealDetails.findByQuantityRange",
 	    query = "SELECT m FROM MealDetails m WHERE m.quantity BETWEEN :minQuantity AND :maxQuantity"
-	)
+	),
+@NamedQuery(
+        name = "MealDetails.avgCaloriesAndTotalQuantity",
+        query = "SELECT SUM(m.quantity) AS totalQuantity, AVG(m.calories) AS avgCalories " +
+                "FROM MealDetails m GROUP BY m.user HAVING AVG(m.calories) > :calorieThreshold " +
+                "ORDER BY AVG(m.calories) DESC"
+    )
+})
 
 
 @Table(name = "meal_details")

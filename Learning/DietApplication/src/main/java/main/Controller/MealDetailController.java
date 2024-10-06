@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import main.DAO.MealDetailsProjection;
+import main.DAO.MealSummary;
 import main.DTO.MealDetailDTO;
 import main.entity.MealDetails;
 import main.entity.MealInfo;
@@ -118,6 +119,15 @@ public class MealDetailController {
 			LocalDate endDate = LocalDate.parse(dateRange.get("endDate"));
 			double avgCalorie=mealDetailService.findAvgCaloriesByDateRange(startDate, endDate);
 			return avgCalorie;
+		}
+		
+		//9.Named with clauses
+		
+		@GetMapping("/groupedQuantityAndCalories")
+		public List<MealSummary> getAvgCaloriesAndTotalQuantity(@RequestParam("calorieThreshold") double calorieThreshold) {
+			
+				List<MealSummary> list = mealDetailService.avgCaloriesAndTotalQuantity(calorieThreshold);
+				return list;
 		}
 	
 	//Map to Dto
