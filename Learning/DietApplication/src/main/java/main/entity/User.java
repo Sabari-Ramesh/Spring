@@ -46,7 +46,7 @@ public class User {
     @Temporal(TemporalType.DATE)
     private LocalDate dob;
 
-    @Column(name = "mobile_number", nullable = false, length = 15)
+    @Column(name = "mobile_number", nullable = false)
     private String mobileNumber;
 
     @ManyToOne
@@ -143,10 +143,10 @@ public class User {
 		this.lastUpdate = lastUpdate;
 	}
 
-//    @Override
-//    public String toString() {
-//        return "User [userId=" + userId + ", userName=" + userName + ", email=" + email + ", password=" + password
-//                + ", gender=" + gender + ", dob=" + dob + ", mobileNumber=" + mobileNumber + ", city=" + city
-//                + ", mealDetails=" + mealDetails + "]";
-//    }
+    @Override
+    public String toString() {
+        return "User [userId=" + userId + ", userName=" + userName + ", email=" + email + ", password=" + password
+                + ", gender=" + gender + ", dob=" + dob + ", mobileNumber=" + mobileNumber + ", city=" + city
+                + ", mealDetails=" + mealDetails + "]";
+    }
 }

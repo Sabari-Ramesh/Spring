@@ -11,7 +11,7 @@ import main.entity.MealDetails;
 @Component
 public class Response {
 	
-	private String SucessMsg;
+	private String sucessMsg;
 	private String failureMsg;
 	private long id;
 	private double avg;
@@ -54,10 +54,10 @@ public class Response {
 		this.mealSummary = mealSummary;
 	}
 	public String getSucessMsg() {
-		return SucessMsg;
+		return sucessMsg;
 	}
 	public void setSucessMsg(String sucessMsg) {
-		SucessMsg = sucessMsg;
+		this.sucessMsg = sucessMsg;
 	}
 	public String getFailureMsg() {
 		return failureMsg;
@@ -82,7 +82,7 @@ public class Response {
 	
 	@Override
 	public String toString() {
-		return "Response [SucessMsg=" + SucessMsg + ", failureMsg=" + failureMsg + ", id=" + id + ", avg=" + avg
+		return "Response [SucessMsg=" + sucessMsg + ", failureMsg=" + failureMsg + ", id=" + id + ", avg=" + avg
 				+ ", mealDetail=" + mealDetail + ", mealDetailsList=" + mealDetailsList + ", mealDetailProjection="
 				+ mealDetailProjection + ", mealSummary=" + mealSummary + "]";
 	}

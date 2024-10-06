@@ -177,10 +177,10 @@ public class MealDetails {
 	}
 	
 	
-//    @Override
-//    public String toString() {
-//        return "MealDetails [mealId=" + mealId + ", mealType=" + mealType + ", mealDate=" + mealDate + ", user=" + user
-//                + ", foodName=" + foodName + ", quantity=" + quantity + ", calories=" + calories + ", protein="
-//                + protein + ", carbs=" + carbs + ", vitamins=" + vitamins + "]";
-//    }
+    @Override
+    public String toString() {
+        return "MealDetails [mealId=" + mealId + ", mealType=" + mealType + ", mealDate=" + mealDate + ", user=" + user
+                + ", foodName=" + foodName + ", quantity=" + quantity + ", calories=" + calories + ", protein="
+                + protein + ", carbs=" + carbs + ", vitamins=" + vitamins + "]";
+    }
 }
