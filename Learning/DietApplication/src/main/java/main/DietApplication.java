@@ -23,14 +23,14 @@ public class DietApplication {
         ApplicationContext context = SpringApplication.run(DietApplication.class, args);
         
         DietApplication application = context.getBean(DietApplication.class);
-        application.fetchAll();        
+        application.fetchByUserId();        
   
     }
 
   
 
-	private void fetchAll() {
-		List<MealDetails> mealDetail=mealDetailService.fetchAll();
+	private void fetchByUserId() {
+		List<MealDetails> mealDetail=mealDetailService.fetchByUserId(1L);
 		System.out.println(mealDetail);
 	}
 

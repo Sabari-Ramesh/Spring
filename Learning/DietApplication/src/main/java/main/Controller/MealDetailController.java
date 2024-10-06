@@ -43,6 +43,8 @@ public class MealDetailController {
 		return mealDetailDto;
 	}
 
+	//Find All
+	
 	@GetMapping("/findAll")
 	public List<MealDetailDTO> findAll(){
 		
@@ -55,6 +57,22 @@ public class MealDetailController {
 			mealDto.add(mealDetailDto);
 		}
 		
+		return mealDto;
+	}
+	
+	
+	//Find By User Id
+	
+	@GetMapping("/findbyuserId/{userId}")
+	public List<MealDetailDTO> findMealDetailsByUserId(@PathVariable("userId") long userId){
+		List<MealDetails> mealDetail=mealDetailService.fetchByUserId(userId);
+		List<MealDetailDTO> mealDto=new ArrayList<>();
+		
+		for(int i=0;i<mealDetail.size();i++) {
+			MealDetails detail=mealDetail.get(i);
+			MealDetailDTO mealDetailDto=maptoDto(detail);
+			mealDto.add(mealDetailDto);
+		}
 		
 		return mealDto;
 	}

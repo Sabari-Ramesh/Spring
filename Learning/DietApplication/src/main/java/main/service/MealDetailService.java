@@ -14,23 +14,30 @@ public class MealDetailService {
 	@Autowired
 	MealDetailsBO mealDetailBo;
 
-	//Insert
+	//2.Insert
 	
 	public void insertDetails(MealDetails mealDetail) {
 		mealDetailBo.insertDetails(mealDetail);
 	}
 
-	//Find By Id
+	//3.Find By Id
 	
 	public MealDetails fetchById(long id) {
 		MealDetails detail=mealDetailBo.fetchById(id);
 		return detail;
 	}
 
-	//Find All
+	//4.Find All
 	
 	public List<MealDetails> fetchAll() {
-		List<MealDetails> list=mealDetailBo.fetchAll();
-		return list;
+		List<MealDetails> mealDetaillist=mealDetailBo.fetchAll();
+		return mealDetaillist;
+	}
+	
+	//5.Custom Querry 
+	
+	public List<MealDetails> fetchByUserId(long id) {
+		List<MealDetails> mealDetaillist=mealDetailBo.fetchByUserId(id);
+		return mealDetaillist;
 	}
 }
