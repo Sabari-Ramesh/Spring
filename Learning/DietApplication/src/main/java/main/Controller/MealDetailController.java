@@ -264,13 +264,11 @@ public class MealDetailController {
 	   log.info("Update Method is triggred...");
 
 	    try {
-	        response = mealDetailService.updateMealDetail(mealDetail); // Call service method
-	        MealDetails fetchedDetail = response.getMealDetail();  // Get the updated entity
+	        response = mealDetailService.updateMealDetail(mealDetail); 
+	        String str = "Meal Details are Sucessfully Updated for Meal Id : " + response.getId();
 	        String sucess=response.getSucessMsg();
 			log.info(sucess);
-	        log.info(fetchedDetail); // Log updated details
-
-	        return ResponseEntity.ok(maptoDto(fetchedDetail)); // Return updated DTO
+	        return ResponseEntity.ok(str); 
 	        
 	    } catch (MealIdNotFoundException e) {
 	        log.error("Meal ID Not Found Error: ", e);
@@ -281,7 +279,6 @@ public class MealDetailController {
 	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 	    }
 	}
-
 
 	// Map to Dto
 
