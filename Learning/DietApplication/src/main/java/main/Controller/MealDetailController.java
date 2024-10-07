@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,13 +22,18 @@ import org.springframework.web.bind.annotation.RestController;
 import main.DAO.MealDetailsProjection;
 import main.DAO.MealSummary;
 import main.DTO.MealDetailDTO;
+import main.Exception.DateException;
+import main.Exception.InvalidNumberException;
+import main.Exception.MealIdNotFoundException;
+import main.Exception.MealTypeException;
+import main.Exception.NameException;
+import main.Exception.QuantityException;
+import main.Exception.UserNotFound;
 import main.entity.MealDetails;
 import main.entity.MealInfo;
 import main.entity.User;
 import main.response.Response;
 import main.service.MealDetailService;
-
-import main.Exception.*;
 
 @RestController
 @RequestMapping("/mealdetails")
@@ -241,6 +247,41 @@ public class MealDetailController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 	}
+	
+	
+	//Update
+	
+	@PutMapping("/update")
+	public ResponseEntity<?> updateMealDetail(@RequestBody MealDetailDTO mealDetailDto) {
+	    
+	    log.info("Update Method is triggered...");
+
+	    // Convert DTO to entity
+	    MealDetails mealDetail = new MealDetails();
+	    mealDetail.setMealId(mealDetailDto.getMealId());
+	    mealDetail.setFoodName(mealDetailDto.getFoodName());
+	    
+	   log.info("Update Method is triggred...");
+
+	    try {
+	        response = mealDetailService.updateMealDetail(mealDetail); // Call service method
+	        MealDetails fetchedDetail = response.getMealDetail();  // Get the updated entity
+	        String sucess=response.getSucessMsg();
+			log.info(sucess);
+	        log.info(fetchedDetail); // Log updated details
+
+	        return ResponseEntity.ok(maptoDto(fetchedDetail)); // Return updated DTO
+	        
+	    } catch (MealIdNotFoundException e) {
+	        log.error("Meal ID Not Found Error: ", e);
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+	        
+	    } catch (NameException e) {
+	        log.error("Invalid Food Name Error: ", e);
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+	    }
+	}
+
 
 	// Map to Dto
 

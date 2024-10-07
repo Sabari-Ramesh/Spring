@@ -109,15 +109,31 @@ public class MealDetailsBO {
 	// 9.Named with Clauses
 
 	public List<MealSummary> avgCaloriesAndTotalQuantity(double calorie) throws QuantityException {
-		
+
 		validQuantity(calorie, "Calorie");
 		List<MealSummary> mealSummary = mealDetailRepo.avgCaloriesAndTotalQuantity(calorie);
-	    if (mealSummary == null || mealSummary.isEmpty()) {
-	        return new ArrayList<>(); 
-	    }	  
-	    return mealSummary;
-		
+		if (mealSummary == null || mealSummary.isEmpty()) {
+			return new ArrayList<>();
+		}
+		return mealSummary;
+
 	}
+
+	// Update
+
+	public MealDetails updateMealDetail(MealDetails mealDetail) throws MealIdNotFoundException, NameException {
+		long id = mealDetail.getMealId();
+
+		validMealId(id);
+		validName(mealDetail.getFoodName(), "foodName");
+
+		MealDetails updateDetail = mealDetailRepo.findById(id).get();
+		updateDetail.setFoodName(mealDetail.getFoodName());
+		updateDetail = mealDetailRepo.save(updateDetail);
+		return updateDetail;
+	}
+
+	
 
 	// Validation
 

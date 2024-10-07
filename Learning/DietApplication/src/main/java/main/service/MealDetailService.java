@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,8 @@ public class MealDetailService {
 
 	@Autowired
 	private Response response;
+	
+	Logger log=Logger.getLogger(MealDetailService.class);
 
 	// 2.Insert
 
@@ -154,4 +157,26 @@ public class MealDetailService {
 		return response;
 		
 	}
+	
+	// Update Detail
+
+		@Transactional
+		public Response updateMealDetail(MealDetails mealDetail) throws MealIdNotFoundException, NameException {
+
+			MealDetails updateDetail = mealDetailBo.updateMealDetail(mealDetail);
+			long id = updateDetail.getMealId();
+
+			if (id > 0) {
+				response.setSucessMsg("Details are Updated Sucessfully");
+				response.setMealDetail(updateDetail);
+			} else {
+				response.setFailureMsg("Failure to Update Details " + id);
+			}
+
+			response.setId(id);
+
+			return response;
+		}
+	
+		
 }
