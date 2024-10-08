@@ -17,12 +17,19 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
 @Entity
+
+@NamedQuery(name = "User.countUsersByCity",query = "SELECT c.cityName AS cityName, COUNT(u) AS userCount FROM User u JOIN u.city c " +
+	            "GROUP BY c.cityName " +
+	            "ORDER BY userCount DESC")
+
+
 @EntityListeners(AuditingEntityListener.class) 
 @Table(name = "users")
 public class User {
@@ -146,7 +153,15 @@ public class User {
 		this.lastUpdate = lastUpdate;
 	}
 
-    @Override
+    public LocalDate getDateCreated() {
+		return dateCreated;
+	}
+
+	public void setDateCreated(LocalDate dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+
+	@Override
     public String toString() {
         return "User [userId=" + userId + ", userName=" + userName + ", email=" + email + ", password=" + password
                 + ", gender=" + gender + ", dob=" + dob + ", mobileNumber=" + mobileNumber + ", city=" + city

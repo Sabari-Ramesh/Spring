@@ -172,8 +172,16 @@ public class MealDetailsBO {
 	}
 
 	private void validMealType(MealInfo mealInfo) throws MealTypeException {
-		int mealId = mealInfo.getMealType();
-		if (mealId <= 0 || mealId >= 5) {
+		String meal =mealInfo.getMeal();
+		if (meal.equalsIgnoreCase("Lunch")) {
+			mealInfo.setMealType(2);
+		}else if(meal.equalsIgnoreCase("Breakfast")) {
+			mealInfo.setMealType(1);
+		}else if(meal.equalsIgnoreCase("Dinner")) {
+			mealInfo.setMealType(3);
+		}else if(meal.equalsIgnoreCase("Snacks")) {
+			mealInfo.setMealType(4);
+		}else {
 			throw new MealTypeException("ERROR : Invalid Meal Type");
 		}
 	}

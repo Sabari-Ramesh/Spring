@@ -59,8 +59,7 @@ public class MealDetailController {
 			if (response.getSucessMsg() != null) {
 				String str = "Meal Details are Sucessfully Created and Your Generated Meal Id : " + response.getId();
 				log.info(str);
-				return ResponseEntity
-						.ok("Meal Details are Sucessfully Created and Your Generated Meal Id : " + response.getId());
+				return ResponseEntity.ok("Meal Details are Sucessfully Created and Your Generated Meal Id : " + response.getId());
 			} else {
 				log.info("Meal Details are not Sucessfully Created");
 				return ResponseEntity.ok("Meal Details are not Sucessfully Created");
@@ -303,7 +302,7 @@ public class MealDetailController {
 
 		MealInfo mealInfo = detail.getMealType();
 
-		detailDto.setMealTypeid(mealInfo.getMealType());
+		detailDto.setMeal(mealInfo.getMeal());
 
 		return detailDto;
 	}
@@ -327,8 +326,7 @@ public class MealDetailController {
 		// Mealinfo
 
 		MealInfo mealType = new MealInfo();
-		mealType.setMealType(mealDetailDto.getMealTypeid());
-
+		mealType.setMeal(mealDetailDto.getMeal());
 		// user
 
 		User user = new User();

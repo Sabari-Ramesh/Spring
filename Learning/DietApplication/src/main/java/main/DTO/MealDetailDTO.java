@@ -22,7 +22,7 @@ public class MealDetailDTO {
 	    private long mealId;
 
 
-	    private int mealTypeid;
+	    private String meal;
 
 
 	    private LocalDate mealDate;
@@ -60,12 +60,12 @@ public class MealDetailDTO {
 			this.mealId = mealId;
 		}
 
-		public int getMealTypeid() {
-			return mealTypeid;
+		public String getMeal() {
+			return meal;
 		}
 
-		public void setMealTypeid(int mealTypeid) {
-			this.mealTypeid = mealTypeid;
+		public void setMeal(String meal) {
+			this.meal = meal;
 		}
 
 		public LocalDate getMealDate() {
@@ -152,7 +152,7 @@ public class MealDetailDTO {
 		
 		@Override
 		public String toString() {
-			return "MealDetailDTO [mealId=" + mealId + ", mealTypeid=" + mealTypeid + ", mealDate=" + mealDate
+			return "MealDetailDTO [mealId=" + mealId + ", meal" + meal + ", mealDate=" + mealDate
 					+ ", userid=" + userid + ", foodName=" + foodName + ", quantity=" + quantity + ", calories="
 					+ calories + ", protein=" + protein + ", carbs=" + carbs + ", vitamins=" + vitamins
 					+ ", dateCreated=" + dateCreated + ", lastUpdate=" + lastUpdate + "]";
