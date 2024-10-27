@@ -35,6 +35,9 @@ public class User {
 
     @Column(nullable = false)
     private int age;
+    
+    @Column(nullable=false,unique = true)
+    private long phonenumber;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -48,11 +51,21 @@ public class User {
 
     // Getters and Setters
 
+    
+    
     public long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public long getPhonenumber() {
+		return phonenumber;
+	}
+
+	public void setPhonenumber(long phonenumber) {
+		this.phonenumber = phonenumber;
+	}
+
+	public void setId(long id) {
         this.id = id;
     }
 
