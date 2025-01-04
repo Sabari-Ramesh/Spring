@@ -15,6 +15,9 @@ public class UserController {
     private UserRepo userRepo;
 
     @Autowired
+    private JWTService jwtService;
+
+    @Autowired
     private AuthenticationManager authenticationManager;
 
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
@@ -32,7 +35,7 @@ public class UserController {
                 .authenticate(new UsernamePasswordAuthenticationToken(user.getName(),user.getPassword()));
 
         if(authentication.isAuthenticated()) {
-            return "Sucess";
+            return jwtService.generateToken(user.getName());
         }
         else {
             return "Login Failed";
