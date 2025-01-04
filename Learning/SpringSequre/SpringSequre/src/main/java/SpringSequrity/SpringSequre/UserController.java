@@ -2,6 +2,9 @@ package SpringSequrity.SpringSequre;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,6 +14,9 @@ public class UserController {
     @Autowired
     private UserRepo userRepo;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
     @PostMapping("/adduser")
@@ -18,5 +24,18 @@ public class UserController {
         user.setPassword(encoder.encode(user.getPassword()));
         User userObj = userRepo.save(user);
         return ResponseEntity.ok(userObj);
+    }
+
+    @PostMapping("/login")
+    public String loginUser(@RequestBody User user){
+        Authentication authentication = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(user.getName(),user.getPassword()));
+
+        if(authentication.isAuthenticated()) {
+            return "Sucess";
+        }
+        else {
+            return "Login Failed";
+        }
     }
 }
